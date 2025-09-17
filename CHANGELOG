@@ -1,3 +1,7 @@
+v0.1.2 - Authentication & Authorization 
+    x Commit: 2025-09-17 17:23
+    x authn package
+    x authz package
 v0.1.1 - Cmd & Web Handlers 
     x Commit: 2025-09-17 16:35
     x CmdConfig

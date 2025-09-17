@@ -6,13 +6,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	ANY_TYPE   string = "*"
-	TOGGLE_ON  string = "on"
-	TOGGLE_OFF string = "off"
-	listAll    string = "all"
-	listActive string = "active"
-)
+func WebRequestOrigin(c *gin.Context) *RequestOrigin {
+	browserInfo := c.GetHeader("User-Agent")
+	ipAddress := c.ClientIP()
+	return &RequestOrigin{
+		BrowserInfo: &browserInfo,
+		IPAddress:   &ipAddress,
+	}
+}
 
 func WebCodeParam(c *gin.Context) string {
 	code := c.Param("Code")
