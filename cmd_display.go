@@ -3,6 +3,7 @@ package krap
 import (
 	"fmt"
 
+	"github.com/roidaradal/fn/ds"
 	"github.com/roidaradal/fn/io"
 )
 
@@ -43,7 +44,7 @@ func DisplayOutput(rq *Request, err error) {
 	}
 }
 
-func DisplayList[T any](list *List[T], rq *Request, err error) {
+func DisplayList[T any](list *ds.List[T], rq *Request, err error) {
 	if rq != nil {
 		fmt.Println(rq.Output())
 	}
