@@ -43,7 +43,7 @@ func CheckActionAllowed(action string, role string) error {
 	return fn.Ternary(isAllowed, nil, errUnauthorizedAccess)
 }
 
-func LoadAccessList(rq *krap.Request, AccessSchema rdb.Schema[rdb.Access]) error {
+func LoadAccessList(rq *krap.Request, AccessSchema *rdb.Schema[rdb.Access]) error {
 	a := AccessSchema.Ref
 	q := rdb.NewFullSelectRowsQuery(AccessSchema.Table, AccessSchema.Reader)
 	q.Where(rdb.Equal(&a.IsActive, true))

@@ -10,8 +10,6 @@ const (
 	listActive string = "active"
 )
 
-type CmdHandler = func([]string)
-
 func MustListBeActive(option string) bool {
 	mustBeActive := strings.ToLower(option) != listAll
 	return mustBeActive

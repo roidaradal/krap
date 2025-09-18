@@ -7,11 +7,13 @@ type Initializer struct {
 	Name string
 }
 
+type cmdHandler = func([]string)
+
 type CmdConfig struct {
 	Command   string
 	MinParams int
 	Params    string
-	Handler   CmdHandler
+	Handler   cmdHandler
 }
 
 type EndpointHandlers map[string]gin.HandlerFunc
@@ -21,7 +23,7 @@ type WebHandler struct {
 	Verb string
 }
 
-func NewCommand(command string, minParams int, params string, handler CmdHandler) *CmdConfig {
+func NewCommand(command string, minParams int, params string, handler cmdHandler) *CmdConfig {
 	return &CmdConfig{command, minParams, params, handler}
 }
 
