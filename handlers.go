@@ -2,6 +2,11 @@ package krap
 
 import "github.com/gin-gonic/gin"
 
+type Initializer struct {
+	Fn   func() error
+	Name string
+}
+
 type CmdConfig struct {
 	Command   string
 	MinParams int

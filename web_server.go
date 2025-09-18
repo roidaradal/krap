@@ -9,7 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const envProd string = "prod"
+const (
+	envProd string = "prod"
+	envDev  string = "dev"
+)
 
 type WebConfig struct {
 	Base string
@@ -56,4 +59,8 @@ func WebServer(cfg *WebConfig, appEnv string) (*gin.Engine, string) {
 	server.Use(cors.New(corsCfg))
 	address := fmt.Sprintf(":%d", cfg.Port)
 	return server, address
+}
+
+func IsValidAppEnv(appEnv string) bool {
+	return appEnv == envDev || appEnv == envProd
 }

@@ -11,16 +11,16 @@ import (
 	"github.com/roidaradal/rdb"
 )
 
-var accessControl ds.StringListMap = nil
+var accessList ds.StringListMap = nil
 var errUnauthorizedAccess = errors.New("public: Unauthorized access")
 
-func AccessControl() ds.StringListMap {
-	return accessControl
+func AccessList() ds.StringListMap {
+	return accessList
 }
 
 func ActorAccess() ds.StringListMap {
 	actorAccess := make(ds.StringListMap)
-	for action, actors := range accessControl {
+	for action, actors := range accessList {
 		for _, actor := range actors {
 			actorAccess[actor] = append(actorAccess[actor], action)
 		}
@@ -35,7 +35,7 @@ func ActorAccess() ds.StringListMap {
 func CheckActionAllowed(action string, role string) error {
 	role = strings.ToUpper(role)
 	action = strings.ToUpper(action)
-	allowed := accessControl[action]
+	allowed := accessList[action]
 	if len(allowed) == 0 {
 		return errUnauthorizedAccess
 	}
@@ -43,19 +43,20 @@ func CheckActionAllowed(action string, role string) error {
 	return fn.Ternary(isAllowed, nil, errUnauthorizedAccess)
 }
 
-func LoadAccessControl(rq *krap.Request, table string, reader rdb.RowReader[rdb.Access]) error {
-	a := rdb.Schema(rdb.Access{})
-	q := rdb.NewFullSelectRowsQuery(table, reader)
+func LoadAccessList(rq *krap.Request, AccessSchema rdb.Schema[rdb.Access]) error {
+	a := AccessSchema.Ref
+	q := rdb.NewFullSelectRowsQuery(AccessSchema.Table, AccessSchema.Reader)
 	q.Where(rdb.Equal(&a.IsActive, true))
 
 	access, err := q.Query(rq.DB)
 	if err != nil {
+		rq.AddLog("Failed to load access list from db")
 		return err
 	}
 
-	accessControl = make(ds.StringListMap)
+	accessList = make(ds.StringListMap)
 	for _, axs := range access {
-		accessControl[axs.Action] = append(accessControl[axs.Action], axs.Role)
+		accessList[axs.Action] = append(accessList[axs.Action], axs.Role)
 	}
 	return nil
 }
