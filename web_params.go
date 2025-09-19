@@ -15,6 +15,11 @@ func WebRequestOrigin(c *gin.Context) *RequestOrigin {
 	}
 }
 
+func WebFork(c *gin.Context) string {
+	fork := c.Param("Fork")
+	return strings.ToLower(fork)
+}
+
 func WebCodeParam(c *gin.Context) string {
 	code := c.Param("Code")
 	return strings.ToUpper(code)
