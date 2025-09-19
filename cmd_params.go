@@ -27,10 +27,10 @@ func ToggleOption(option string) (bool, bool) {
 	}
 }
 
-func CmdTypeOption(params []string) string {
+func CmdTypeOption(params []string, limit int) string {
 	typ := ANY_TYPE
-	if len(params) > 0 {
-		typ = strings.ToUpper(params[0])
+	if len(params) > limit {
+		typ = strings.ToUpper(params[limit])
 	}
 	return typ
 }
