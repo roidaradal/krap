@@ -3,11 +3,12 @@ package krap
 import "strings"
 
 const (
-	ANY_TYPE   string = "*"
-	TOGGLE_ON  string = "on"
-	TOGGLE_OFF string = "off"
-	listAll    string = "all"
-	listActive string = "active"
+	DEFAULT_OPTION string = "."
+	ANY_TYPE       string = "*"
+	TOGGLE_ON      string = "on"
+	TOGGLE_OFF     string = "off"
+	listAll        string = "all"
+	listActive     string = "active"
 )
 
 func MustListBeActive(option string) bool {
