@@ -14,13 +14,6 @@ var (
 	errNoLastInsertID = errors.New("no last insert id")
 )
 
-// Field, OldValue, NewValue
-type FieldUpdate [3]string
-
-func (f FieldUpdate) Tuple() (string, string, string) {
-	return f[0], f[1], f[2]
-}
-
 func DBInsertRow[T any](rq *Request, item *T, table string) error {
 	_, err := dbInsertRow(rq, item, table)
 	return err

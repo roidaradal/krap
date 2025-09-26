@@ -3,7 +3,7 @@ module github.com/roidaradal/krap
 go 1.25.0
 
 require (
-	github.com/roidaradal/fn v0.3.1
+	github.com/roidaradal/fn v0.3.3
 	github.com/roidaradal/rdb v0.12.1
 )
 
