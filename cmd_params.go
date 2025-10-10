@@ -2,32 +2,26 @@ package krap
 
 import "strings"
 
-const (
-	DEFAULT_OPTION string = "."
-	ANY_TYPE       string = "*"
-	TOGGLE_ON      string = "on"
-	TOGGLE_OFF     string = "off"
-	listAll        string = "all"
-	listActive     string = "active"
-)
-
-func MustListBeActive(option string) bool {
-	mustBeActive := strings.ToLower(option) != listAll
+// False if option is 'all', otherwise true
+func MustBeActiveOption(option string) bool {
+	mustBeActive := strings.ToLower(option) != viewAll
 	return mustBeActive
 }
 
-// on/off, hasToggleOption
+// Return toggle on/off (boolean), hasToggleOption (ok flag)
 func ToggleOption(option string) (bool, bool) {
 	switch strings.ToLower(option) {
-	case TOGGLE_ON:
+	case toggleOn:
 		return true, true
-	case TOGGLE_OFF:
+	case toggleOff:
 		return false, true
 	default:
 		return false, false
 	}
 }
 
+// Returns uppercase type at params[limit] if it exists,
+// Defaults to ANY_TYPE (*)
 func CmdTypeOption(params []string, limit int) string {
 	typ := ANY_TYPE
 	if len(params) > limit {

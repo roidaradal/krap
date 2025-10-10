@@ -9,16 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	envProd string = "prod"
-	envDev  string = "dev"
-)
-
 type WebConfig struct {
-	Base string
-	Port uint
+	Base     string   // API endpoint prefix
+	Port     uint     // port number
+	CORSList []string // list of allowed sites for CORS
 }
 
+// Validates WebConfig
 func (c WebConfig) FindError() error {
 	if c.Port == 0 {
 		return errors.New("invalid API port")
@@ -29,8 +26,10 @@ func (c WebConfig) FindError() error {
 	return nil
 }
 
+// Creates a new Gin web server
 func WebServer(cfg *WebConfig, appEnv string) (*gin.Engine, string) {
-	if appEnv == envProd {
+	isProdEnv := appEnv == envProd
+	if isProdEnv {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
@@ -53,14 +52,14 @@ func WebServer(cfg *WebConfig, appEnv string) (*gin.Engine, string) {
 		"PATCH",
 		"DELETE",
 	}
-	corsCfg.AllowAllOrigins = true
+	if isProdEnv {
+		corsCfg.AllowOrigins = cfg.CORSList
+	} else {
+		corsCfg.AllowAllOrigins = true
+	}
 
 	server := gin.Default()
 	server.Use(cors.New(corsCfg))
 	address := fmt.Sprintf(":%d", cfg.Port)
 	return server, address
-}
-
-func IsValidAppEnv(appEnv string) bool {
-	return appEnv == envDev || appEnv == envProd
 }
