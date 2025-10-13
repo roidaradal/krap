@@ -8,9 +8,18 @@ v0.2.x - Authorization Package
     - Add schema for config_access (see RBAC based matrix)
     - Add schema for config_scoped_access
         - config_project_access, change ProjectID to ScopeCode 
-v0.2.x - Audit Package
-    - Commit: 
-    - Add schema for ActionLogs, BatchLogs, BatchItemLogs
+v0.2.2 - Audit Package
+    x Commit: 2025-10-13 19:00
+    x Types and schema:
+        x ActionLog
+        x BatchLog
+        x BatchItemLog
+    x audit.Initialize
+    x audit.NewDetails 
+    x audit.NewActionLog, NewActionLogs 
+    x audit.AddActionLogTx, AddActionLogsTx
+    x audit.NewBatchLog, NewBatchLogItems 
+    x audit.AddBatchLogTx, AddBatchLogItemsTx
 v0.2.1 - Daemons Package 
     x Commit: 2025-10-13 16:43
     x CmdReadPatchObject 
