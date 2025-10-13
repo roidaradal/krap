@@ -4,7 +4,18 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/roidaradal/fn/dict"
 )
+
+// Reads the patch object from request body as type T, then convert to dict.Object
+func WebReadPatchObject[T any](c *gin.Context) (dict.Object, error) {
+	var patchItem T
+	err := c.BindJSON(&patchItem)
+	if err != nil {
+		return nil, err
+	}
+	return dict.ToObject(&patchItem)
+}
 
 // Gets the web request origin
 func WebRequestOrigin(c *gin.Context) *RequestOrigin {

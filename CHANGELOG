@@ -1,3 +1,22 @@
+v0.2.x - App Config and Features
+    - Add schema for config_app
+    - Add schema for config_features 
+    - Add schema for config_scoped_features 
+        - config_project_features, change ProjectCode to ScopeCode
+v0.2.x - Authorization Package
+    - Commit: 
+    - Add schema for config_access (see RBAC based matrix)
+    - Add schema for config_scoped_access
+        - config_project_access, change ProjectID to ScopeCode 
+v0.2.x - Audit Package
+    - Commit: 
+    - Add schema for ActionLogs, BatchLogs, BatchItemLogs
+v0.2.1 - Daemons Package 
+    x Commit: 2025-10-13 16:43
+    x CmdReadPatchObject 
+    x WebReadPatchObject
+    x daemon.Run
+    x daemon.LoadConfig
 v0.2.0 - Restructure
     x Commit: 2025-10-10 14:49
     x Add README

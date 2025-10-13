@@ -4,8 +4,8 @@ go 1.25.0
 
 require (
 	github.com/gin-gonic/gin v1.11.0
-	github.com/roidaradal/fn v0.4.3
-	github.com/roidaradal/rdb v0.13.3
+	github.com/roidaradal/fn v0.4.7
+	github.com/roidaradal/rdb v0.13.5
 )
 
 require (

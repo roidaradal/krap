@@ -1,6 +1,20 @@
 package krap
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/roidaradal/fn/dict"
+	"github.com/roidaradal/fn/io"
+)
+
+// Reads the patch object from path as type T, then convert to dict.Object
+func CmdReadPatchObject[T any](path string) (dict.Object, error) {
+	patchItem, err := io.ReadJSON[T](path)
+	if err != nil {
+		return nil, err
+	}
+	return dict.ToObject(patchItem)
+}
 
 // False if option is 'all', otherwise true
 func MustBeActiveOption(option string) bool {
