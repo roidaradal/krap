@@ -13,11 +13,9 @@ var (
 	BatchLogItems *ze.Schema[BatchLogItem]
 )
 
-var errs []error = nil
-
 // Initialize audit package
 func Initialize() error {
-	errs = make([]error, 0)
+	errs := make([]error, 0)
 
 	ActionLogs, errs = krap.AddSharedSchema(&ActionLog{}, errs)
 	BatchLogs, errs = krap.AddSchema(&BatchLog{}, "logs_batch", errs)

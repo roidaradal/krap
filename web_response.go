@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/roidaradal/fn"
 	"github.com/roidaradal/rdb/ze"
 )
 
@@ -41,7 +42,8 @@ func SendActionResponse(c *gin.Context, rq *ze.Request, err error) {
 	if err == nil {
 		// url := c.Request.URL.Path
 		// TODO: APILog url, status
-		c.JSON(rq.Status, actionResponse{
+		status := fn.Ternary(rq.Status == 0, ze.OK200, rq.Status)
+		c.JSON(status, actionResponse{
 			Success: true,
 			Message: okMessage,
 		})
@@ -58,7 +60,8 @@ func SendDataResponse[T any](c *gin.Context, rq *ze.Request, data *T, err error)
 	if err == nil {
 		// url := c.Request.URL.Path
 		// TODO: APILog url, status, include data in logs?
-		c.JSON(rq.Status, dataResponse{
+		status := fn.Ternary(rq.Status == 0, ze.OK200, rq.Status)
+		c.JSON(status, dataResponse{
 			Data:    data,
 			Message: okMessage,
 		})
@@ -86,7 +89,8 @@ func SendDataError(c *gin.Context, rq *ze.Request, err error) {
 func sendActionError(c *gin.Context, rq *ze.Request, err error) {
 	// url := c.Request.URL.Path
 	message, _ := publicErrorMessage(err)
-	c.JSON(rq.Status, actionResponse{
+	status := fn.Ternary(rq.Status == 0, ze.Err500, rq.Status)
+	c.JSON(status, actionResponse{
 		Success: false,
 		Message: message,
 	})
@@ -96,7 +100,8 @@ func sendActionError(c *gin.Context, rq *ze.Request, err error) {
 func sendDataError(c *gin.Context, rq *ze.Request, err error) {
 	// url := c.Request.URL.Path
 	message, _ := publicErrorMessage(err)
-	c.JSON(rq.Status, dataResponse{
+	status := fn.Ternary(rq.Status == 0, ze.Err500, rq.Status)
+	c.JSON(status, dataResponse{
 		Data:    nil,
 		Message: message,
 	})

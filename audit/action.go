@@ -36,16 +36,18 @@ func NewActionLogs(actorID ze.ID, actionDetails [][2]string) []*ActionLog {
 
 // Inserts ActionLog using transaction at given table
 func AddActionLogTx(rqtx *ze.Request, actionLog *ActionLog, table string) error {
-	return ActionLogs.InsertTxAt(rqtx, &ze.AddParams[ActionLog]{
-		Item:  actionLog,
-		Table: table,
-	})
+	if ActionLogs == nil {
+		rqtx.Status = ze.Err500
+		return errMissingSchema
+	}
+	return ActionLogs.InsertTxAt(rqtx, actionLog, table)
 }
 
 // Inserts ActionLog rows using transaction at given table
 func AddActionLogsTx(rqtx *ze.Request, actionLogs []*ActionLog, table string) error {
-	return ActionLogs.InsertTxRowsAt(rqtx, &ze.AddParams[ActionLog]{
-		Items: actionLogs,
-		Table: table,
-	})
+	if ActionLogs == nil {
+		rqtx.Status = ze.Err500
+		return errMissingSchema
+	}
+	return ActionLogs.InsertTxRowsAt(rqtx, actionLogs, table)
 }

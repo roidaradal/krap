@@ -33,14 +33,18 @@ func NewBatchLogItems(batchCode string, detailsList []string) []*BatchLogItem {
 
 // Inserts BatchLog using transaction
 func AddBatchLogTx(rqtx *ze.Request, batchLog *BatchLog) error {
-	return BatchLogs.InsertTx(rqtx, &ze.AddParams[BatchLog]{
-		Item: batchLog,
-	})
+	if BatchLogs == nil {
+		rqtx.Status = ze.Err500
+		return errMissingSchema
+	}
+	return BatchLogs.InsertTx(rqtx, batchLog)
 }
 
 // Inserts BatchLogItems using transaction
 func AddBatchLogItemsTx(rqtx *ze.Request, batchItems []*BatchLogItem) error {
-	return BatchLogItems.InsertTxRows(rqtx, &ze.AddParams[BatchLogItem]{
-		Items: batchItems,
-	})
+	if BatchLogItems == nil {
+		rqtx.Status = ze.Err500
+		return errMissingSchema
+	}
+	return BatchLogItems.InsertTxRows(rqtx, batchItems)
 }
