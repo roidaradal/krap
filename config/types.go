@@ -3,11 +3,12 @@ package config
 import (
 	"errors"
 
+	"github.com/roidaradal/fn/dict"
 	"github.com/roidaradal/rdb/ze"
 )
 
 var (
-	errMissingSchema      = errors.New("kv schema is not initialized")
+	errMissingSchema      = errors.New("schema is not initialized")
 	errUnavailableFeature = errors.New("public: Unavailable feature")
 	errUnknownFeature     = errors.New("public: Unknown feature")
 )
@@ -32,4 +33,11 @@ type Feature struct {
 type ScopedFeature struct {
 	Feature
 	ScopeCode string `fx:"upper"`
+}
+
+type Defaults struct {
+	UintMap       map[string]uint
+	IntMap        map[string]int
+	StringMap     dict.StringMap
+	StringListMap dict.StringListMap
 }

@@ -74,7 +74,7 @@ func GetAllFeatures() dict.BoolMap {
 // Get list of active app features
 func GetActiveFeatures() []string {
 	if appFeatures == nil {
-		return nil
+		return []string{}
 	}
 	activeFeatures := fn.FilterMap(appFeatures, func(feature string, isActive bool) bool {
 		return isActive
@@ -85,7 +85,7 @@ func GetActiveFeatures() []string {
 // Get all active {scope => []features} at table
 func GetAllScopedFeatures(table string) dict.StringListMap {
 	if !dict.HasKey(scopedFeatures, table) {
-		return nil
+		return dict.StringListMap{}
 	}
 	return scopedFeatures[table]
 }
@@ -107,9 +107,9 @@ func GetAllFeatureScopes(table string) dict.StringListMap {
 
 // Get all active scoped features at table for given scopeCodes
 func GetScopedFeatures(table string, scopeCodes ...string) dict.StringListMap {
-	miniScopedFeatures := make(dict.StringListMap)
+	scopeFeatures := make(dict.StringListMap)
 	if !dict.HasKey(scopedFeatures, table) {
-		return miniScopedFeatures
+		return scopeFeatures
 	}
 	for _, scope := range scopeCodes {
 		scope = strings.ToUpper(scope)
@@ -118,32 +118,38 @@ func GetScopedFeatures(table string, scopeCodes ...string) dict.StringListMap {
 			features = []string{}
 		}
 		slices.Sort(features)
-		miniScopedFeatures[scope] = features
+		scopeFeatures[scope] = features
 	}
-	return miniScopedFeatures
+	return scopeFeatures
 }
 
 // Check if feature is available
-func CheckFeature(feature string) error {
+func CheckFeature(rq *ze.Request, feature string) error {
 	feature = strings.ToUpper(feature)
 	isActive, ok := appFeatures[feature]
 	if !ok {
+		rq.Status = ze.Err404
 		return errUnknownFeature
 	}
-	return fn.Ternary(isActive, nil, errUnavailableFeature)
+	if !isActive {
+		rq.Status = ze.Err403
+		return errUnavailableFeature
+	}
+	return nil
 }
 
 // Check if scoped feature at table is available
-func CheckScopedFeature(table, scope, feature string) error {
+func CheckScopedFeature(rq *ze.Request, table, scopeCode, feature string) error {
 	if !dict.HasKey(scopedFeatures, table) {
+		rq.Status = ze.Err403
 		return errUnavailableFeature
 	}
-	scope = strings.ToUpper(scope)
+	scopeCode = strings.ToUpper(scopeCode)
 	feature = strings.ToUpper(feature)
-	enabled := scopedFeatures[table][scope]
-	if len(enabled) == 0 {
+	enabled := scopedFeatures[table][scopeCode]
+	if !slices.Contains(enabled, feature) {
+		rq.Status = ze.Err403
 		return errUnavailableFeature
 	}
-	isEnabled := slices.Contains(enabled, feature)
-	return fn.Ternary(isEnabled, nil, errUnavailableFeature)
+	return nil
 }

@@ -2,11 +2,15 @@ v0.2.x - Authentication Package
     - Commit: 
     - Add schema for sessions
     - Transfer all auth/ package here...
-v0.2.x - Authorization Package
-    - Commit: 
-    - Add schema for config_access (see RBAC based matrix)
-    - Add schema for config_scoped_access
-        - config_project_access, change ProjectID to ScopeCode 
+v0.2.4 - Authorization Package
+    x Commit: 2025-10-14 15:47
+    x Types and Schema:
+        x Access (config_access)
+        x ScopedAccess 
+    x authz.Initialize 
+    x authz.LoadAccess, LoadScopedAccess
+    x authz.GetAllAccess, GetAllRoleAccess, authz.GetScopedAccess
+    x authz.CheckActionAllowedFor, CheckScopedActionAllowedFor
 v0.2.3 - App Config and Features
     x Commit: 2025-10-14 11:47
     x Types and Schema:
@@ -14,10 +18,8 @@ v0.2.3 - App Config and Features
         x Feature (config_features)
         x ScopedFeature
     x config.Initialize 
-    x config.Lookup 
-    x config.Create
-    x config.LoadFeatures 
-    x config.LoadScopedFeatures
+    x config.Lookup, config.Create
+    x config.LoadFeatures, LoadScopedFeatures
     x config.GetAllFeatures, GetActiveFeatures
     x config.GetAllScopedFeatures, GetAllFeatureScopes, GetScopedFeatures 
     x config.CheckFeature, CheckScopedFeature

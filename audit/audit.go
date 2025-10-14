@@ -1,0 +1,112 @@
+package audit
+
+import (
+	"fmt"
+	"strings"
+
+	"github.com/roidaradal/fn/clock"
+	"github.com/roidaradal/fn/str"
+	"github.com/roidaradal/krap"
+	"github.com/roidaradal/rdb/ze"
+)
+
+const detailsGlue string = "|"
+
+// Initialize audit package
+func Initialize() error {
+	errs := make([]error, 0)
+
+	ActionLogs, errs = krap.AddSharedSchema(&ActionLog{}, errs)
+	BatchLogs, errs = krap.AddSchema(&BatchLog{}, "logs_batch", errs)
+	BatchLogItems, errs = krap.AddSchema(&BatchLogItem{}, "logs_batch_items", errs)
+
+	if len(errs) > 0 {
+		return fmt.Errorf("%d errors encountered: %w", len(errs), errs[0])
+	}
+
+	return nil
+}
+
+// Creates new details string from items separated by |
+func NewDetails(items ...string) string {
+	return strings.Join(items, detailsGlue)
+}
+
+// Creates new ActionLog
+func NewActionLog(actorID ze.ID, action, details string) *ActionLog {
+	actionLog := &ActionLog{}
+	actionLog.CreatedAt = clock.DateTimeNow()
+	actionLog.ActorID = actorID
+	actionLog.Action = action
+	actionLog.Details = details
+	return actionLog
+}
+
+// Creates list of new ActionLogs
+func NewActionLogs(actorID ze.ID, actionDetails [][2]string) []*ActionLog {
+	actionLogs := make([]*ActionLog, len(actionDetails))
+	for i, pair := range actionDetails {
+		action, details := pair[0], pair[1]
+		actionLogs[i] = NewActionLog(actorID, action, details)
+	}
+	return actionLogs
+}
+
+// Inserts ActionLog using transaction at given table
+func AddActionLogTx(rqtx *ze.Request, actionLog *ActionLog, table string) error {
+	if ActionLogs == nil {
+		rqtx.Status = ze.Err500
+		return errMissingSchema
+	}
+	return ActionLogs.InsertTxAt(rqtx, actionLog, table)
+}
+
+// Inserts ActionLog rows using transaction at given table
+func AddActionLogsTx(rqtx *ze.Request, actionLogs []*ActionLog, table string) error {
+	if ActionLogs == nil {
+		rqtx.Status = ze.Err500
+		return errMissingSchema
+	}
+	return ActionLogs.InsertTxRowsAt(rqtx, actionLogs, table)
+}
+
+// Creates new BatchLog
+func NewBatchLog(action, details, actionGlue string) *BatchLog {
+	now := clock.TimeNow()
+	batchLog := &BatchLog{}
+	batchLog.CreatedAt = clock.StandardFormat(now)
+	batchLog.Code = fmt.Sprintf("%s-%s", clock.TimestampFormat(now), str.SplitInitials(action, actionGlue))
+	batchLog.Action = action
+	batchLog.Details = details
+	return batchLog
+}
+
+// Creates rows of new BatchLog items
+func NewBatchLogItems(batchCode string, detailsList []string) []*BatchLogItem {
+	batchItems := make([]*BatchLogItem, len(detailsList))
+	for i, details := range detailsList {
+		batchItem := &BatchLogItem{}
+		batchItem.Code = batchCode
+		batchItem.Details = details
+		batchItems[i] = batchItem
+	}
+	return batchItems
+}
+
+// Inserts BatchLog using transaction
+func AddBatchLogTx(rqtx *ze.Request, batchLog *BatchLog) error {
+	if BatchLogs == nil {
+		rqtx.Status = ze.Err500
+		return errMissingSchema
+	}
+	return BatchLogs.InsertTx(rqtx, batchLog)
+}
+
+// Inserts BatchLogItems using transaction
+func AddBatchLogItemsTx(rqtx *ze.Request, batchItems []*BatchLogItem) error {
+	if BatchLogItems == nil {
+		rqtx.Status = ze.Err500
+		return errMissingSchema
+	}
+	return BatchLogItems.InsertTxRows(rqtx, batchItems)
+}

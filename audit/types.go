@@ -8,6 +8,12 @@ import (
 
 var errMissingSchema = errors.New("schema is not initialized")
 
+var (
+	ActionLogs    *ze.Schema[ActionLog]
+	BatchLogs     *ze.Schema[BatchLog]
+	BatchLogItems *ze.Schema[BatchLogItem]
+)
+
 type ActionDetails struct {
 	Action  string
 	Details string

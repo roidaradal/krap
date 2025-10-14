@@ -88,8 +88,7 @@ func SendDataError(c *gin.Context, rq *ze.Request, err error) {
 // Common: sends an actionResponse with the given error
 func sendActionError(c *gin.Context, rq *ze.Request, err error) {
 	// url := c.Request.URL.Path
-	message, _ := publicErrorMessage(err)
-	status := fn.Ternary(rq.Status == 0, ze.Err500, rq.Status)
+	status, message := getStatusMessage(rq, err)
 	c.JSON(status, actionResponse{
 		Success: false,
 		Message: message,
@@ -99,8 +98,7 @@ func sendActionError(c *gin.Context, rq *ze.Request, err error) {
 // Common: sends a dataResponse with the given error
 func sendDataError(c *gin.Context, rq *ze.Request, err error) {
 	// url := c.Request.URL.Path
-	message, _ := publicErrorMessage(err)
-	status := fn.Ternary(rq.Status == 0, ze.Err500, rq.Status)
+	status, message := getStatusMessage(rq, err)
 	c.JSON(status, dataResponse{
 		Data:    nil,
 		Message: message,
@@ -117,4 +115,12 @@ func getOutput(rq *ze.Request, err error) string {
 		output = append(output, fmt.Sprintf("Error: %s", err.Error()))
 	}
 	return strings.Join(output, "\n")
+}
+
+// Get error message and status code
+func getStatusMessage(rq *ze.Request, err error) (int, string) {
+	message, ok := publicErrorMessage(err)
+	defaultStatus := fn.Ternary(ok, ze.Err400, ze.Err500)
+	status := fn.Ternary(rq.Status == 0, defaultStatus, rq.Status)
+	return status, message
 }
