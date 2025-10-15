@@ -141,35 +141,37 @@ func AuthenticateAccount[T Authable](authParams *Params, schema *ze.Schema[T], c
 	return account, rq, nil
 }
 
-// Create new session
-func NewSession[T Authable](authParams *Params, origin *krap.RequestOrigin, schema *ze.Schema[T], condition rdb.Condition, hook PostAuthHook[T]) (*Session, *ze.Request, error) {
+// Create new session, returns account and sessionCode
+func NewSession[T Authable](authParams *Params, origin *krap.RequestOrigin, schema *ze.Schema[T], condition rdb.Condition, hook PostAuthHook[T]) (*T, string, *ze.Request, error) {
+	var sessionCode string = ""
+
 	rq, err := ze.NewRequest("New%sSession", schema.Name)
 	if err != nil {
-		return nil, rq, err
+		return nil, sessionCode, rq, err
 	}
 
 	if !check.IsValidStruct(authParams) {
 		rq.Status = ze.Err400
-		return nil, rq, ze.ErrMissingParams
+		return nil, sessionCode, rq, ze.ErrMissingParams
 	}
 
 	account, err := authenticateAccount(rq, authParams, schema, condition)
 	if err != nil {
 		rq.AddFmtLog("%s authentication failed", schema.Name)
-		return nil, rq, err
+		return nil, sessionCode, rq, err
 	}
 
 	session, err := newSession(rq, account, origin)
 	if err != nil {
 		rq.AddFmtLog("Failed to create %s session", schema.Name)
-		return nil, rq, err
+		return nil, sessionCode, rq, err
 	}
 
 	if hook != nil {
-		hook(account)
+		hook(rq, account)
 	}
 
-	return session, rq, nil
+	return account, session.Code, rq, nil
 }
 
 // Common: gets the associated session for the authToken,

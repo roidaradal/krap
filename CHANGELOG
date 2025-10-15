@@ -1,3 +1,9 @@
+v0.2.6 - authn.NewSession
+    x Commit: 2025-10-15 17:10
+    x krap.AuthenticateRoot
+    x krap.LoadWebConfig
+    x Update authn.NewSession response
+    x Update authn.PostAuthHook to accept ze.Request
 v0.2.5 - Authentication Package 
     x Commit: 2025-10-15 14:52
     x Types and Schema:

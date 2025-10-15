@@ -12,10 +12,16 @@ import (
 )
 
 // Function hook for post-authentication actions to account
-type PostAuthHook[T any] = func(*T)
+type PostAuthHook[T any] = func(*ze.Request, *T)
 
 // Authenticate account
 func authenticateAccount[T Authable](rq *ze.Request, params *Params, schema *ze.Schema[T], condition rdb.Condition) (*T, error) {
+	if condition == nil {
+		rq.AddLog("Missing condition for authenticate account")
+		rq.Status = ze.Err500
+		return nil, ze.ErrMissingParams
+	}
+
 	q := rdb.NewFullSelectRowQuery(schema.Table, schema.Reader)
 	q.Where(condition)
 

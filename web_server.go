@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/roidaradal/fn/io"
 )
 
 type WebConfig struct {
@@ -24,6 +25,18 @@ func (c WebConfig) FindError() error {
 		return errors.New("invalid API base")
 	}
 	return nil
+}
+
+// Loads the web config
+func LoadWebConfig(path string) (*WebConfig, error) {
+	cfg, err := io.ReadJSON[WebConfig](path)
+	if err != nil {
+		return nil, err
+	}
+	if err = cfg.FindError(); err != nil {
+		return nil, err
+	}
+	return cfg, nil
 }
 
 // Creates a new Gin web server
