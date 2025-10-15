@@ -7,13 +7,9 @@ import (
 )
 
 var (
-	errMissingSchema      = errors.New("schema is not initialized")
 	ErrUnauthorizedAccess = errors.New("public: Unauthorized access")
-)
-
-var (
-	AccessSchema       *ze.Schema[Access]
-	ScopedAccessSchema *ze.Schema[ScopedAccess]
+	AccessSchema          *ze.Schema[Access]
+	ScopedAccessSchema    *ze.Schema[ScopedAccess]
 )
 
 type Access struct {

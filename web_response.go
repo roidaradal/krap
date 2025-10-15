@@ -42,7 +42,10 @@ func SendActionResponse(c *gin.Context, rq *ze.Request, err error) {
 	if err == nil {
 		// url := c.Request.URL.Path
 		// TODO: APILog url, status
-		status := fn.Ternary(rq.Status == 0, ze.OK200, rq.Status)
+		status := ze.OK200
+		if rq != nil {
+			status = fn.Ternary(rq.Status == 0, ze.OK200, rq.Status)
+		}
 		c.JSON(status, actionResponse{
 			Success: true,
 			Message: okMessage,
@@ -60,7 +63,10 @@ func SendDataResponse[T any](c *gin.Context, rq *ze.Request, data *T, err error)
 	if err == nil {
 		// url := c.Request.URL.Path
 		// TODO: APILog url, status, include data in logs?
-		status := fn.Ternary(rq.Status == 0, ze.OK200, rq.Status)
+		status := ze.OK200
+		if rq != nil {
+			status = fn.Ternary(rq.Status == 0, ze.OK200, rq.Status)
+		}
 		c.JSON(status, dataResponse{
 			Data:    data,
 			Message: okMessage,
@@ -120,7 +126,9 @@ func getOutput(rq *ze.Request, err error) string {
 // Get error message and status code
 func getStatusMessage(rq *ze.Request, err error) (int, string) {
 	message, ok := publicErrorMessage(err)
-	defaultStatus := fn.Ternary(ok, ze.Err400, ze.Err500)
-	status := fn.Ternary(rq.Status == 0, defaultStatus, rq.Status)
+	status := fn.Ternary(ok, ze.Err400, ze.Err500)
+	if rq != nil {
+		status = fn.Ternary(rq.Status == 0, status, rq.Status)
+	}
 	return status, message
 }

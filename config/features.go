@@ -19,7 +19,7 @@ var (
 func LoadFeatures(rq *ze.Request) error {
 	if Features == nil {
 		rq.Status = ze.Err500
-		return errMissingSchema
+		return ze.ErrMissingSchema
 	}
 	f := Features.Ref
 	q := rdb.NewLookupQuery[Feature](Features.Table, &f.Name, &f.IsActive)
@@ -38,7 +38,7 @@ func LoadFeatures(rq *ze.Request) error {
 func LoadScopedFeatures(rq *ze.Request, table string) error {
 	if ScopedFeatures == nil {
 		rq.Status = ze.Err500
-		return errMissingSchema
+		return ze.ErrMissingSchema
 	}
 
 	f := ScopedFeatures.Ref

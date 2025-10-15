@@ -56,7 +56,7 @@ func NewActionLogs(actorID ze.ID, actionDetails [][2]string) []*ActionLog {
 func AddActionLogTx(rqtx *ze.Request, actionLog *ActionLog, table string) error {
 	if ActionLogs == nil {
 		rqtx.Status = ze.Err500
-		return errMissingSchema
+		return ze.ErrMissingSchema
 	}
 	return ActionLogs.InsertTxAt(rqtx, actionLog, table)
 }
@@ -65,7 +65,7 @@ func AddActionLogTx(rqtx *ze.Request, actionLog *ActionLog, table string) error 
 func AddActionLogsTx(rqtx *ze.Request, actionLogs []*ActionLog, table string) error {
 	if ActionLogs == nil {
 		rqtx.Status = ze.Err500
-		return errMissingSchema
+		return ze.ErrMissingSchema
 	}
 	return ActionLogs.InsertTxRowsAt(rqtx, actionLogs, table)
 }
@@ -97,7 +97,7 @@ func NewBatchLogItems(batchCode string, detailsList []string) []*BatchLogItem {
 func AddBatchLogTx(rqtx *ze.Request, batchLog *BatchLog) error {
 	if BatchLogs == nil {
 		rqtx.Status = ze.Err500
-		return errMissingSchema
+		return ze.ErrMissingSchema
 	}
 	return BatchLogs.InsertTx(rqtx, batchLog)
 }
@@ -106,7 +106,7 @@ func AddBatchLogTx(rqtx *ze.Request, batchLog *BatchLog) error {
 func AddBatchLogItemsTx(rqtx *ze.Request, batchItems []*BatchLogItem) error {
 	if BatchLogItems == nil {
 		rqtx.Status = ze.Err500
-		return errMissingSchema
+		return ze.ErrMissingSchema
 	}
 	return BatchLogItems.InsertTxRows(rqtx, batchItems)
 }

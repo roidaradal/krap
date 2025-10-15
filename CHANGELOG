@@ -1,7 +1,29 @@
-v0.2.x - Authentication Package 
-    - Commit: 
-    - Add schema for sessions
-    - Transfer all auth/ package here...
+v0.2.5 - Authentication Package 
+    x Commit: 2025-10-15 14:52
+    x Types and Schema:
+        x Session, Sessions 
+        x Params, Token
+    x authn.Initialize
+    x authn.InitializeStore
+    x authn.SetSessionDuration, SetSessionCodeLength
+    x Token functions:
+        x NewToken, IsToken 
+        x WebAuthToken, ReqAuthToken
+    x Store maps and functions:
+        x dict.SyncMaps: sessionStore, sessionUpdates
+        x storeAddSessions, storeAddSession 
+        x storeGetSession, storeDeleteSession, storeExtendSession 
+    x archiveExpiredSessions, Daemon_ArchiveExpiredSessions
+    x deleteArchivedSessions, Daemon_DeleteArchivedSessions
+    x extendSessions, extendSession, Daemon_ExtendSessions
+    x DeleteSession
+    x IsValidSession, TouchSession
+    x AuthenticateAccount
+    x NewSession
+    x Common functions: 
+        x findSession
+        x archiveSession
+        x authenticateAccount
 v0.2.4 - Authorization Package
     x Commit: 2025-10-14 15:47
     x Types and Schema:

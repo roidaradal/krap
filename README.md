@@ -18,6 +18,23 @@ Audit Logs
 ## authn
 Authentication
 
+* authn.Initialize( ) error
+* authn.InitializeStore( ) error
+* authn.SetSessionDuration(time.Duration)
+* authn.SetSessionCodeLength(uint)
+* authn.DeleteSession(*Token) (*ze.Request, error)
+* authn.TouchSession(*ze.Request, *Token) (*Session, error)
+* authn.IsValidSession(*Token) (bool, *ze.Request, error)
+* authn.AuthenticateAccount[T Authable](*Params, *ze.Schema[T], rdb.Condition) (*T, *ze.Request, error)
+* authn.NewSession[T Authable](*Params, *krap.RequestOrigin, *ze.Schema[T], rdb.Condition, PostAuthHook[T]) (*Session, *ze.Request, error)
+* authn.NewToken(string) *Token 
+* authn.IsToken(string) bool 
+* authn.WebAuthToken(*gin.Context) *Token 
+* authn.ReqAuthToken(*gin.Context, *krap.ResponseType) *Token
+* authn.Daemon_ArchiveExpiredSessions(interval int, timeScale time.Duration)
+* authn.Daemon_DeleteArchivedSessions(marginDays uint, interval int, timeScale time.Duration)
+* authn.Daemon_ExtendSessions(interval int, timeScale time.Duration)
+
 ## authz
 Authorization
 

@@ -1,23 +1,14 @@
 package audit
 
 import (
-	"errors"
-
 	"github.com/roidaradal/rdb/ze"
 )
-
-var errMissingSchema = errors.New("schema is not initialized")
 
 var (
 	ActionLogs    *ze.Schema[ActionLog]
 	BatchLogs     *ze.Schema[BatchLog]
 	BatchLogItems *ze.Schema[BatchLogItem]
 )
-
-type ActionDetails struct {
-	Action  string
-	Details string
-}
 
 type ActionLog struct {
 	ze.CreatedItem
@@ -34,5 +25,10 @@ type BatchLog struct {
 
 type BatchLogItem struct {
 	ze.CodedItem
+	Details string
+}
+
+type ActionDetails struct {
+	Action  string
 	Details string
 }

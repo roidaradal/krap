@@ -8,7 +8,6 @@ import (
 )
 
 var (
-	errMissingSchema      = errors.New("schema is not initialized")
 	errUnavailableFeature = errors.New("public: Unavailable feature")
 	errUnknownFeature     = errors.New("public: Unknown feature")
 )

@@ -36,7 +36,7 @@ func Initialize() error {
 func LoadAccess(rq *ze.Request) error {
 	if AccessSchema == nil {
 		rq.Status = ze.Err500
-		return errMissingSchema
+		return ze.ErrMissingSchema
 	}
 
 	q := rdb.NewFullSelectRowsQuery(AccessSchema.Table, AccessSchema.Reader)
@@ -81,7 +81,7 @@ func LoadAccess(rq *ze.Request) error {
 func LoadScopedAccess(rq *ze.Request, table string) error {
 	if ScopedAccessSchema == nil {
 		rq.Status = ze.Err500
-		return errMissingSchema
+		return ze.ErrMissingSchema
 	}
 
 	q := rdb.NewFullSelectRowsQuery(table, ScopedAccessSchema.Reader)

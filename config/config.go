@@ -40,7 +40,7 @@ func Initialize() error {
 func Lookup(rq *ze.Request, appKeys []string) (dict.StringMap, error) {
 	if KVSchema == nil {
 		rq.Status = ze.Err500
-		return nil, errMissingSchema
+		return nil, ze.ErrMissingSchema
 	}
 	kv := KVSchema.Ref
 	q := rdb.NewLookupQuery[KV](KVSchema.Table, &kv.Key, &kv.Value)
