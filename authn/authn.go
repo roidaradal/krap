@@ -187,13 +187,12 @@ func findSession(rq *ze.Request, authToken *Token) (*Session, error) {
 		}
 
 		s := Sessions.Ref
-		q := rdb.NewFullSelectRowQuery(Sessions.Table, Sessions.Reader)
-		q.Where(rdb.And(
+		condition := rdb.And(
 			rdb.Equal(&s.Code, authToken.Code),
 			rdb.Equal(&s.Type, authToken.Type),
-		))
+		)
 
-		session, err = q.QueryRow(rq.DB)
+		session, err = Sessions.Get(rq, condition)
 		if err != nil {
 			rq.AddErrorLog(err)
 			rq.Status = ze.Err401

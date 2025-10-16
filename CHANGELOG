@@ -1,3 +1,8 @@
+v0.2.7 - krap.SendDataResponse
+    x Commit: 2025-10-16 12:58
+    x Renamed krap/config to krap/konfig
+    x Convert SelectRow / SelectRowsQuery to Schema.Get, GetRows
+    x Update krap.SendDataResponse signature
 v0.2.6 - authn.NewSession
     x Commit: 2025-10-15 17:10
     x krap.AuthenticateRoot

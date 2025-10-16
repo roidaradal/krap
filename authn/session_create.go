@@ -22,10 +22,7 @@ func authenticateAccount[T Authable](rq *ze.Request, params *Params, schema *ze.
 		return nil, ze.ErrMissingParams
 	}
 
-	q := rdb.NewFullSelectRowQuery(schema.Table, schema.Reader)
-	q.Where(condition)
-
-	account, err := q.QueryRow(rq.DB)
+	account, err := schema.Get(rq, condition)
 	if err != nil {
 		rq.AddErrorLog(err)
 		rq.Status = ze.Err401

@@ -65,10 +65,8 @@ func archiveExpiredSessions() (*ze.Request, error) {
 		return rq, ze.ErrMissingSchema
 	}
 
-	q := rdb.NewFullSelectRowsQuery(Sessions.Table, Sessions.Reader)
-	q.Where(rdb.LessEqual(&Sessions.Ref.ExpiresAt, clock.DateTimeNow()))
-
-	expired, err := q.Query(rq.DB)
+	condition := rdb.LessEqual(&Sessions.Ref.ExpiresAt, clock.DateTimeNow())
+	expired, err := Sessions.GetRows(rq, condition)
 	if err != nil {
 		rq.AddLog("Failed to get expired sessions")
 		rq.Status = ze.Err500
@@ -85,7 +83,7 @@ func archiveExpiredSessions() (*ze.Request, error) {
 	for i, session := range expired {
 		rq.AddFmtLog("%.2d / %.2d: ArchiveExpiredSession: %s", i+1, numExpired, session.Token.String())
 
-		err = archiveSession(rq, &session, sessionExpired)
+		err = archiveSession(rq, session, sessionExpired)
 		if err != nil {
 			fail += 1
 			rq.AddFmtLog("Failed: %s", err.Error())

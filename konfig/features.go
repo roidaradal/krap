@@ -1,4 +1,4 @@
-package config
+package konfig
 
 import (
 	"slices"
@@ -42,10 +42,8 @@ func LoadScopedFeatures(rq *ze.Request, table string) error {
 	}
 
 	f := ScopedFeatures.Ref
-	q := rdb.NewFullSelectRowsQuery(table, ScopedFeatures.Reader)
-	q.Where(rdb.Equal(&f.IsActive, true))
-
-	features, err := q.Query(rq.DB)
+	condition := rdb.Equal(&f.IsActive, true)
+	features, err := ScopedFeatures.GetRowsAt(rq, condition, table)
 	if err != nil {
 		rq.AddFmtLog("Failed to load scoped features from '%s'", table)
 		rq.Status = ze.Err500

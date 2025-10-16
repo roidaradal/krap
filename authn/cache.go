@@ -26,10 +26,9 @@ func InitializeStore() error {
 	}
 
 	s := Sessions.Ref
-	q := rdb.NewFullSelectRowsQuery(Sessions.Table, Sessions.Reader)
-	q.Where(rdb.Greater(&s.ExpiresAt, clock.DateTimeNow()))
+	condition := rdb.Greater(&s.ExpiresAt, clock.DateTimeNow())
 
-	sessions, err := q.Query(rq.DB)
+	sessions, err := Sessions.GetRows(rq, condition)
 	if err != nil {
 		return err
 	}
@@ -39,9 +38,9 @@ func InitializeStore() error {
 }
 
 // Adds sessions to session store
-func storeAddSessions(sessions []Session) {
+func storeAddSessions(sessions []*Session) {
 	for _, session := range sessions {
-		storeAddSession(&session)
+		storeAddSession(session)
 	}
 }
 

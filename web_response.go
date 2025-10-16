@@ -56,7 +56,7 @@ func SendActionResponse(c *gin.Context, rq *ze.Request, err error) {
 }
 
 // Sends dataResponse
-func SendDataResponse[T any](c *gin.Context, rq *ze.Request, data *T, err error) {
+func SendDataResponse[T any](c *gin.Context, data *T, rq *ze.Request, err error) {
 	// TODO: APILog output
 	fmt.Println("Output:\n" + getOutput(rq, err)) // temporary
 

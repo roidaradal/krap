@@ -7,7 +7,6 @@ import (
 
 	"github.com/roidaradal/fn/dict"
 	"github.com/roidaradal/krap"
-	"github.com/roidaradal/rdb"
 	"github.com/roidaradal/rdb/ze"
 )
 
@@ -39,8 +38,7 @@ func LoadAccess(rq *ze.Request) error {
 		return ze.ErrMissingSchema
 	}
 
-	q := rdb.NewFullSelectRowsQuery(AccessSchema.Table, AccessSchema.Reader)
-	access, err := q.Query(rq.DB)
+	access, err := AccessSchema.GetRows(rq, nil) // no condition
 	if err != nil {
 		rq.AddLog("Failed to load app access from db")
 		rq.Status = ze.Err500
@@ -84,8 +82,7 @@ func LoadScopedAccess(rq *ze.Request, table string) error {
 		return ze.ErrMissingSchema
 	}
 
-	q := rdb.NewFullSelectRowsQuery(table, ScopedAccessSchema.Reader)
-	access, err := q.Query(rq.DB)
+	access, err := ScopedAccessSchema.GetRowsAt(rq, nil, table) // no condition
 	if err != nil {
 		rq.AddFmtLog("Failed to load scoped access from '%s'", table)
 		rq.Status = ze.Err500
