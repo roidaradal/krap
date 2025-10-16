@@ -1,3 +1,13 @@
+v0.2.9 - Root Package 
+    x Commit: 2025-10-16 14:45
+    x root.SetCommandMap
+    x root.MainLoop
+    x root internal functions
+    x Transfer from krap:
+        x type: CmdHandler, CmdConfig
+        x RootAuthenticate => root.Authenticate 
+        x NewCommand, NewCommandMap
+    x Update README.md
 v0.2.8 - WebRequestBody 
     x Commit: 2025-10-16 13:46
     x authn.ErrExistingSession
