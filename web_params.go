@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/roidaradal/fn/dict"
+	"github.com/roidaradal/rdb/ze"
 )
 
 // Reads the patch object from request body as type T, then convert to dict.Object
@@ -25,6 +26,17 @@ func WebRequestOrigin(c *gin.Context) *RequestOrigin {
 		BrowserInfo: &browserInfo,
 		IPAddress:   &ipAddress,
 	}
+}
+
+// Gets the request body object from web request
+func WebRequestBody[T any](c *gin.Context, response *ResponseType) (*T, error) {
+	var item *T
+	err := c.BindJSON(&item)
+	if err != nil {
+		response.SendErrorFn(c, nil, ze.ErrMissingParams)
+		return nil, err
+	}
+	return item, nil
 }
 
 // Gets the lowercase :Fork param

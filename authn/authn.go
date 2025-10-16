@@ -14,6 +14,7 @@ import (
 )
 
 var (
+	ErrExistingSession = errors.New("public: Existing session")
 	ErrExpiredSession  = errors.New("public: Expired session")
 	ErrFailedAuth      = errors.New("public: Authentication failed")
 	ErrInvalidSession  = errors.New("public: Invalid session")

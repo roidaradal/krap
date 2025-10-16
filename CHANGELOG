@@ -1,3 +1,7 @@
+v0.2.8 - WebRequestBody 
+    x Commit: 2025-10-16 13:46
+    x authn.ErrExistingSession
+    x krap.WebRequestBody
 v0.2.7 - krap.SendDataResponse
     x Commit: 2025-10-16 12:58
     x Renamed krap/config to krap/konfig
