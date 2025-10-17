@@ -21,7 +21,6 @@ func InitializeStore() error {
 	}
 
 	if Sessions == nil {
-		rq.Status = ze.Err500
 		return ze.ErrMissingSchema
 	}
 

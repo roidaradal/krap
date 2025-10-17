@@ -49,6 +49,11 @@ func IsValidAppEnv(appEnv string) bool {
 	return appEnv == envDev || appEnv == envProd
 }
 
+// Check if app env is 'prod'
+func IsProdAppEnv(appEnv string) bool {
+	return appEnv == envProd
+}
+
 // Get public error message from "public: <message>"
 func publicErrorMessage(err error) (string, bool) {
 	msg := err.Error()

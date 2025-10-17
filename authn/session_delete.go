@@ -12,7 +12,6 @@ import (
 func archiveSession(rq *ze.Request, session *Session, status string) error {
 	err := rq.StartTransaction(2)
 	if err != nil {
-		rq.Status = ze.Err500
 		return err
 	}
 	rqtx := rq
@@ -29,7 +28,6 @@ func archiveSession(rq *ze.Request, session *Session, status string) error {
 
 	// 2) DELETE from sessions
 	if Sessions == nil {
-		rq.Status = ze.Err500
 		return ze.ErrMissingSchema
 	}
 	condition := rdb.Equal(&Sessions.Ref.ID, sessionID)
@@ -61,7 +59,6 @@ func archiveExpiredSessions() (*ze.Request, error) {
 	}()
 
 	if Sessions == nil {
-		rq.Status = ze.Err500
 		return rq, ze.ErrMissingSchema
 	}
 
@@ -69,7 +66,6 @@ func archiveExpiredSessions() (*ze.Request, error) {
 	expired, err := Sessions.GetRows(rq, condition)
 	if err != nil {
 		rq.AddLog("Failed to get expired sessions")
-		rq.Status = ze.Err500
 		return rq, err
 	}
 
@@ -112,7 +108,6 @@ func deleteArchivedSessions(marginDays uint) (*ze.Request, error) {
 	limitTime := clock.StandardFormat(now.Add(-margin))
 
 	if Sessions == nil {
-		rq.Status = ze.Err500
 		return rq, ze.ErrMissingSchema
 	}
 

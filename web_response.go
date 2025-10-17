@@ -1,6 +1,7 @@
 package krap
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -8,6 +9,12 @@ import (
 	"github.com/roidaradal/fn"
 	"github.com/roidaradal/rdb/ze"
 )
+
+// Map common error => status codes
+var webErrorStatus = map[error]int{
+	ze.ErrMissingParams: ze.Err400,
+	ze.ErrMissingSchema: ze.Err500,
+}
 
 // Response for action web requests
 type actionResponse struct {
@@ -42,11 +49,7 @@ func SendActionResponse(c *gin.Context, rq *ze.Request, err error) {
 	if err == nil {
 		// url := c.Request.URL.Path
 		// TODO: APILog url, status
-		status := ze.OK200
-		if rq != nil {
-			status = fn.Ternary(rq.Status == 0, ze.OK200, rq.Status)
-		}
-		c.JSON(status, actionResponse{
+		c.JSON(rq.Status, actionResponse{
 			Success: true,
 			Message: okMessage,
 		})
@@ -63,11 +66,7 @@ func SendDataResponse[T any](c *gin.Context, data *T, rq *ze.Request, err error)
 	if err == nil {
 		// url := c.Request.URL.Path
 		// TODO: APILog url, status, include data in logs?
-		status := ze.OK200
-		if rq != nil {
-			status = fn.Ternary(rq.Status == 0, ze.OK200, rq.Status)
-		}
-		c.JSON(status, dataResponse{
+		c.JSON(rq.Status, dataResponse{
 			Data:    data,
 			Message: okMessage,
 		})
@@ -126,9 +125,25 @@ func getOutput(rq *ze.Request, err error) string {
 // Get error message and status code
 func getStatusMessage(rq *ze.Request, err error) (int, string) {
 	message, ok := publicErrorMessage(err)
+	// default status: 400 if has public error message, else 500
 	status := fn.Ternary(ok, ze.Err400, ze.Err500)
+	// Check request status
 	if rq != nil {
-		status = fn.Ternary(rq.Status == 0, status, rq.Status)
+		status = rq.Status // get request status by default
+		// If has error but status remained at OK200, find from web errors
+		if err != nil && status == ze.OK200 {
+			found := false
+			for errKey := range webErrorStatus {
+				if errors.Is(err, errKey) {
+					status = webErrorStatus[errKey]
+					found = true
+					break
+				}
+			}
+			if !found {
+				status = ze.Err500 // defaults to 500 if not found in web errors
+			}
+		}
 	}
 	return status, message
 }

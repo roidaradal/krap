@@ -18,7 +18,6 @@ type PostAuthHook[T any] = func(*ze.Request, *T)
 func authenticateAccount[T Authable](rq *ze.Request, params *Params, schema *ze.Schema[T], condition rdb.Condition) (*T, error) {
 	if condition == nil {
 		rq.AddLog("Missing condition for authenticate account")
-		rq.Status = ze.Err500
 		return nil, ze.ErrMissingParams
 	}
 
@@ -42,12 +41,10 @@ func authenticateAccount[T Authable](rq *ze.Request, params *Params, schema *ze.
 // Creates new session
 func newSession[T Authable](rq *ze.Request, accountRef *T, origin *krap.RequestOrigin) (*Session, error) {
 	if Sessions == nil {
-		rq.Status = ze.Err500
 		return nil, ze.ErrMissingSchema
 	}
 
 	if accountRef == nil {
-		rq.Status = ze.Err400
 		return nil, ze.ErrMissingParams
 	}
 	account := *accountRef

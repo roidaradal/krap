@@ -34,14 +34,12 @@ func Initialize() error {
 // Load app access list
 func LoadAccess(rq *ze.Request) error {
 	if AccessSchema == nil {
-		rq.Status = ze.Err500
 		return ze.ErrMissingSchema
 	}
 
 	access, err := AccessSchema.GetRows(rq, nil) // no condition
 	if err != nil {
 		rq.AddLog("Failed to load app access from db")
-		rq.Status = ze.Err500
 		return err
 	}
 
@@ -71,21 +69,18 @@ func LoadAccess(rq *ze.Request) error {
 		}
 	}
 
-	rq.Status = ze.OK200
 	return nil
 }
 
 // Load scoped access list at table
 func LoadScopedAccess(rq *ze.Request, table string) error {
 	if ScopedAccessSchema == nil {
-		rq.Status = ze.Err500
 		return ze.ErrMissingSchema
 	}
 
 	access, err := ScopedAccessSchema.GetRowsAt(rq, nil, table) // no condition
 	if err != nil {
 		rq.AddFmtLog("Failed to load scoped access from '%s'", table)
-		rq.Status = ze.Err500
 		return err
 	}
 
@@ -120,7 +115,6 @@ func LoadScopedAccess(rq *ze.Request, table string) error {
 		}
 	}
 
-	rq.Status = ze.OK200
 	return nil
 }
 

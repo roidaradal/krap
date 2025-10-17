@@ -18,7 +18,6 @@ var (
 // Load app features
 func LoadFeatures(rq *ze.Request) error {
 	if Features == nil {
-		rq.Status = ze.Err500
 		return ze.ErrMissingSchema
 	}
 	f := Features.Ref
@@ -30,14 +29,12 @@ func LoadFeatures(rq *ze.Request) error {
 		return err
 	}
 	appFeatures = lookup
-	rq.Status = ze.OK200
 	return nil
 }
 
 // Load active scoped features at table
 func LoadScopedFeatures(rq *ze.Request, table string) error {
 	if ScopedFeatures == nil {
-		rq.Status = ze.Err500
 		return ze.ErrMissingSchema
 	}
 
@@ -46,7 +43,6 @@ func LoadScopedFeatures(rq *ze.Request, table string) error {
 	features, err := ScopedFeatures.GetRowsAt(rq, condition, table)
 	if err != nil {
 		rq.AddFmtLog("Failed to load scoped features from '%s'", table)
-		rq.Status = ze.Err500
 		return err
 	}
 
@@ -60,7 +56,6 @@ func LoadScopedFeatures(rq *ze.Request, table string) error {
 		scopedFeatures[table][scope] = append(scopedFeatures[table][scope], feature)
 	}
 
-	rq.Status = ze.OK200
 	return nil
 }
 

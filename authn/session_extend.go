@@ -26,7 +26,6 @@ func extendSessions() (*ze.Request, error) {
 	}
 
 	if Sessions == nil {
-		rq.Status = ze.Err500
 		return rq, ze.ErrMissingSchema
 	}
 

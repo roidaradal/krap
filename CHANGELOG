@@ -1,3 +1,20 @@
+v0.2.10 - ActionTask
+    x Commit: 2025-10-17 16:52
+    x Remove repetitive rq.Status 
+    x krap.IsProdAppEnv
+    x Task Function types:
+        x ActionFn, ComboFn 
+        x DataFn, ListFn
+    x BaseTask, BaseTaskToken 
+    x [Cmd|Web]Decorator(Token)
+    x [Cmd|Web|Dual]Handler
+    x [Cmd|Web|Dual](Add)Router
+    x Common initialize 
+    x BaseTask.cmdInitialize, webInitialize
+    x ActionTask, CodedActionTask 
+        x New: Action, CodedActionTask
+        x WithCmd, WithWeb
+        x CmdHandler, WebHandler
 v0.2.9 - Root Package 
     x Commit: 2025-10-16 14:45
     x root.SetCommandMap

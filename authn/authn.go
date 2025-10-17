@@ -60,7 +60,6 @@ func DeleteSession(authToken *Token) (*ze.Request, error) {
 	}
 
 	if !check.IsValidStruct(authToken) {
-		rq.Status = ze.Err400
 		return rq, ze.ErrMissingParams
 	}
 
@@ -113,7 +112,6 @@ func IsValidSession(authToken *Token) (bool, *ze.Request, error) {
 	}
 
 	if !check.IsValidStruct(authToken) {
-		rq.Status = ze.Err400
 		return false, rq, ze.ErrMissingParams
 	}
 
@@ -130,7 +128,6 @@ func AuthenticateAccount[T Authable](authParams *Params, schema *ze.Schema[T], c
 	}
 
 	if !check.IsValidStruct(authParams) {
-		rq.Status = ze.Err400
 		return nil, rq, ze.ErrMissingParams
 	}
 
@@ -152,7 +149,6 @@ func NewSession[T Authable](authParams *Params, origin *krap.RequestOrigin, sche
 	}
 
 	if !check.IsValidStruct(authParams) {
-		rq.Status = ze.Err400
 		return nil, sessionCode, rq, ze.ErrMissingParams
 	}
 
@@ -183,7 +179,6 @@ func findSession(rq *ze.Request, authToken *Token) (*Session, error) {
 	session := storeGetSession(authToken.String())
 	if session == nil {
 		if Sessions == nil {
-			rq.Status = ze.Err500
 			return nil, ze.ErrMissingSchema
 		}
 

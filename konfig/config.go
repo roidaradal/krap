@@ -39,7 +39,6 @@ func Initialize() error {
 // Load Config lookup from database
 func Lookup(rq *ze.Request, appKeys []string) (dict.StringMap, error) {
 	if KVSchema == nil {
-		rq.Status = ze.Err500
 		return nil, ze.ErrMissingSchema
 	}
 	kv := KVSchema.Ref
@@ -51,7 +50,6 @@ func Lookup(rq *ze.Request, appKeys []string) (dict.StringMap, error) {
 		rq.Status = ze.Err500
 		return nil, err
 	}
-	rq.Status = ze.OK200
 	return lookup, nil
 }
 
