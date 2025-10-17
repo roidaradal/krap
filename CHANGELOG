@@ -1,3 +1,8 @@
+v0.2.13 - Task Router Adjustment 
+    x Commit: 2025-10-18 07:53
+    x Unify Router types to Router and AddRouter 
+    x Adjust Task Handler functions to accept map[string]T, 
+      not a specific type
 v0.2.12 - Task Router Types 
     x Commit: 2025-10-17 22:59
     x Changed the Cmd/Web/DualRouter types to map aliases

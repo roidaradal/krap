@@ -51,19 +51,14 @@ type WebHandler interface {
 	WebHandler() gin.HandlerFunc
 }
 
-type DualHandler interface {
+type Handler interface {
 	CmdHandler
 	WebHandler
 }
 
 type (
-	CmdRouter  = map[string]CmdHandler
-	WebRouter  = map[string]WebHandler
-	DualRouter = map[string]DualHandler
-
-	CmdAddRouter  = map[[2]string]CmdHandler
-	WebAddRouter  = map[[2]string]WebHandler
-	DualAddRouter = map[[2]string]DualHandler
+	Router    = map[string]Handler
+	AddRouter = map[[2]string]Handler
 )
 
 // Request, Params, Actor, Code, ID

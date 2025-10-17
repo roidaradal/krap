@@ -19,7 +19,7 @@ func Cmd[T CmdHandler](command string, minParams int, docs string, task T) *root
 }
 
 // Create new CmdConfig Router
-func CmdRoute(command string, minParams int, docs string, router CmdRouter) *root.CmdConfig {
+func CmdRoute[T CmdHandler](command string, minParams int, docs string, router map[string]T) *root.CmdConfig {
 	// Build the handlers of each router option
 	handlerOf := make(map[string]root.CmdHandler)
 	for key, task := range router {
@@ -48,7 +48,7 @@ func Web[T WebHandler](task T) gin.HandlerFunc {
 }
 
 // Create gin.HandlerFunc Router
-func Fork(router WebRouter, response *krap.ResponseType) gin.HandlerFunc {
+func Fork[T WebHandler](router map[string]T, response *krap.ResponseType) gin.HandlerFunc {
 	// Build handlers of each router option
 	handlerOf := make(map[string]gin.HandlerFunc)
 	for key, task := range router {
