@@ -14,7 +14,7 @@ import (
 type Params = dict.Object
 
 type Actor interface {
-	GetType() string
+	GetRole() string
 }
 
 type (

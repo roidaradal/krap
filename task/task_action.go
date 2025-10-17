@@ -19,7 +19,7 @@ type CodedActionTask[A Actor] struct {
 }
 
 // Creates new ActionTask
-func Action[A Actor](action, item string, fn ActionFn[A]) *ActionTask[A] {
+func NewActionTask[A Actor](action, item string, fn ActionFn[A]) *ActionTask[A] {
 	task := &ActionTask[A]{}
 	task.Action = action
 	task.Item = item
@@ -28,7 +28,7 @@ func Action[A Actor](action, item string, fn ActionFn[A]) *ActionTask[A] {
 }
 
 // Creates new CodedActionTask
-func CodedAction[A Actor](action, item string, fn ActionFn[A], codeIndex int) *CodedActionTask[A] {
+func NewCodedActionTask[A Actor](action, item string, fn ActionFn[A], codeIndex int) *CodedActionTask[A] {
 	task := &CodedActionTask[A]{}
 	task.Action = action
 	task.Item = item
@@ -37,36 +37,31 @@ func CodedAction[A Actor](action, item string, fn ActionFn[A], codeIndex int) *C
 	return task
 }
 
-// Attach CmdDecorator to ActionTask,
-// Return task to be chainable
+// Attach CmdDecorator to ActionTask, Return task to be chainable
 func (t *ActionTask[A]) WithCmd(cmdDecorator CmdDecorator[A]) *ActionTask[A] {
 	t.CmdDecorator = cmdDecorator
 	return t
 }
 
-// Attach WebDecorator to ActionTask,
-// Return task to be chainable
+// Attach WebDecorator to ActionTask, Return task to be chainable
 func (t *ActionTask[A]) WithWeb(webDecorator WebDecorator[A]) *ActionTask[A] {
 	t.WebDecorator = webDecorator
 	return t
 }
 
-// Attach CmdDecorator to CodedActionTask,
-// Return task to be chainable
+// Attach CmdDecorator to CodedActionTask, Return task to be chainable
 func (t *CodedActionTask[A]) WithCmd(cmdDecorator CmdDecorator[A]) *CodedActionTask[A] {
 	t.CmdDecorator = cmdDecorator
 	return t
 }
 
-// Attach WebDecorator to CodedActionTask,
-// Return task to be chainable
+// Attach WebDecorator to CodedActionTask, Return task to be chainable
 func (t *CodedActionTask[A]) WithWeb(webDecorator WebDecorator[A]) *CodedActionTask[A] {
 	t.WebDecorator = webDecorator
 	return t
 }
 
-// Attach HookFn to CodedActonTask,
-// Return task to be chainable
+// Attach HookFn to CodedActonTask, Return task to be chainable
 func (t *CodedActionTask[A]) WithValidator(hookFn HookFn[A]) *CodedActionTask[A] {
 	t.Validator = hookFn
 	return t
@@ -82,7 +77,7 @@ func (task ActionTask[A]) CmdHandler() root.CmdHandler {
 			return
 		}
 		// Check Authorization
-		err = authz.CheckActionAllowedFor(rq, task.Action, task.Item, (*actor).GetType())
+		err = authz.CheckActionAllowedFor(rq, task.Action, task.Item, (*actor).GetRole())
 		if err == nil {
 			// Perform action if authorized
 			err = task.Fn(rq, params, actor)
@@ -101,7 +96,7 @@ func (task ActionTask[A]) WebHandler() gin.HandlerFunc {
 			return
 		}
 		// Check Authorization
-		err = authz.CheckActionAllowedFor(rq, task.Action, task.Item, (*actor).GetType())
+		err = authz.CheckActionAllowedFor(rq, task.Action, task.Item, (*actor).GetRole())
 		if err == nil {
 			// Perform action if authorized
 			err = task.Fn(rq, params, actor)

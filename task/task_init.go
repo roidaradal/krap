@@ -5,18 +5,22 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/roidaradal/fn/str"
 	"github.com/roidaradal/rdb/ze"
 )
 
+const actionGlue string = "-"
+
 var (
-	errInvalidActor = errors.New("public: Invalid actor")
-	errMissingHook  = errors.New("missing hook")
+	ErrInvalidActor  = errors.New("public: Invalid actor")
+	ErrInvalidOption = errors.New("public: Invalid option")
+	errMissingHook   = errors.New("missing hook")
 )
 
 // Common initialization process (cmd or web)
 func initialize[A Actor](task BaseTask[A], params Params, actor *A, err error) (*ze.Request, Params, *A, error) {
 	if err == nil && actor == nil {
-		err = errInvalidActor
+		err = ErrInvalidActor
 	}
 	if err != nil {
 		return nil, nil, nil, err
@@ -57,4 +61,18 @@ func getCode(args []string, index int) string {
 		code = strings.ToUpper(args[index])
 	}
 	return code
+}
+
+// Gets the core item name, removes trailing "%s" if any
+func itemPrefix(item string) string {
+	if isCompleteItem(item) {
+		return item
+	}
+	parts := str.CleanSplit(item, actionGlue)
+	return strings.Join(parts[:len(parts)-1], actionGlue)
+}
+
+// Common: Checks if name ends in "%s"
+func isCompleteItem(item string) bool {
+	return !strings.HasPrefix(item, "%s")
 }
