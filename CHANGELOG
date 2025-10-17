@@ -1,3 +1,6 @@
+v0.2.12 - Task Router Types 
+    x Commit: 2025-10-17 22:59
+    x Changed the Cmd/Web/DualRouter types to map aliases
 v0.2.11 - Task Routers 
     x Commit: 2025-10-17 22:44
     x Cmd, CmdRoute

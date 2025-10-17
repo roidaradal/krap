@@ -57,13 +57,13 @@ type DualHandler interface {
 }
 
 type (
-	CmdRouter  map[string]CmdHandler
-	WebRouter  map[string]WebHandler
-	DualRouter map[string]DualHandler
+	CmdRouter  = map[string]CmdHandler
+	WebRouter  = map[string]WebHandler
+	DualRouter = map[string]DualHandler
 
-	CmdAddRouter  map[[2]string]CmdHandler
-	WebAddRouter  map[[2]string]WebHandler
-	DualAddRouter map[[2]string]DualHandler
+	CmdAddRouter  = map[[2]string]CmdHandler
+	WebAddRouter  = map[[2]string]WebHandler
+	DualAddRouter = map[[2]string]DualHandler
 )
 
 // Request, Params, Actor, Code, ID
