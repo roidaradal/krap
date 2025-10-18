@@ -1,3 +1,8 @@
+v0.2.14 - Authz CheckAction Params 
+    x Commit: 2025-10-18 11:46
+    x Remove action, item from params, check in rq instead 
+        x CheckActionAllowedFor
+        x CheckScopedActionAllowedFor
 v0.2.13 - Task Router Adjustment 
     x Commit: 2025-10-18 07:53
     x Unify Router types to Router and AddRouter 

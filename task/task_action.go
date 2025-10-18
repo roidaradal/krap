@@ -77,7 +77,7 @@ func (task ActionTask[A]) CmdHandler() root.CmdHandler {
 			return
 		}
 		// Check Authorization
-		err = authz.CheckActionAllowedFor(rq, task.Action, task.Item, (*actor).GetRole())
+		err = authz.CheckActionAllowedFor(rq, (*actor).GetRole())
 		if err == nil {
 			// Perform action if authorized
 			err = task.Fn(rq, params, actor)
@@ -96,7 +96,7 @@ func (task ActionTask[A]) WebHandler() gin.HandlerFunc {
 			return
 		}
 		// Check Authorization
-		err = authz.CheckActionAllowedFor(rq, task.Action, task.Item, (*actor).GetRole())
+		err = authz.CheckActionAllowedFor(rq, (*actor).GetRole())
 		if err == nil {
 			// Perform action if authorized
 			err = task.Fn(rq, params, actor)
