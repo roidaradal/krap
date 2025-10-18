@@ -37,15 +37,19 @@ func DisplayData[T any](data *T, rq *ze.Request, err error) {
 }
 
 // Prints list items, request logs, and error
-func DisplayList[T any](list *ds.List[T], rq *ze.Request, err error) {
+func DisplayList[T any](list *ds.List[*T], rq *ze.Request, err error) {
 	if rq != nil {
 		fmt.Println(rq.Output())
 	}
 	if err == nil {
 		for i, item := range list.Items {
-			fmt.Printf("%d: %v\n", i+1, item)
-			fmt.Println("Count:", list.Count)
+			if item == nil {
+				fmt.Printf("%d: nil\n", i+1)
+			} else {
+				fmt.Printf("%d: %v\n", i+1, *item)
+			}
 		}
+		fmt.Println("Count:", list.Count)
 	} else {
 		DisplayError(err)
 	}

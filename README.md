@@ -19,7 +19,7 @@ Kollection of Roi's Application Patterns
 * krap.AddSharedSchema[T](item *T, []error) (*ze.Schema[T], []error)
 * krap.DisplayError(error)
 * krap.DisplayData[T](*T, *ze.Request, error)
-* krap.DisplayList[T](*ds.List[T], *ze.Request, error)
+* krap.DisplayList[T](*ds.List[*T], *ze.Request, error)
 * krap.DisplayOutput(*ze.Request, error)
 * krap.CmdReadPatchObject[T](path string) (dict.Object, error)
 * krap.MustBeActiveOption(option string) bool

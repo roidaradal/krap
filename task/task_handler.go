@@ -5,8 +5,25 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/roidaradal/krap"
+	"github.com/roidaradal/krap/authn"
 	"github.com/roidaradal/krap/root"
+	"github.com/roidaradal/rdb/ze"
 )
+
+type baseConfig[A Actor, P any] struct {
+	initialize func(P) (*ze.Request, Params, *A, error)
+	errorFn    func(P, *ze.Request, error)
+}
+
+type baseTokenConfig[P any] struct {
+	initialize func(P) (*ze.Request, Params, *authn.Token, error)
+	errorFn    func(P, *ze.Request, error)
+}
+
+// Cmd DisplayError adapter
+func cmdDisplayError(args []string, rq *ze.Request, err error) {
+	krap.DisplayError(err)
+}
 
 // Create new CmdConfig using task.CmdHandler()
 func Cmd[T CmdHandler](command string, minParams int, docs string, task T) *root.CmdConfig {

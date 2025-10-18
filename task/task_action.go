@@ -5,17 +5,43 @@ import (
 	"github.com/roidaradal/krap"
 	"github.com/roidaradal/krap/authz"
 	"github.com/roidaradal/krap/root"
+	"github.com/roidaradal/rdb/ze"
 )
 
+type actionConfig[A Actor, P any] struct {
+	*baseConfig[A, P]
+	outputFn func(P, *ze.Request, error)
+}
+
 type ActionTask[A Actor] struct {
-	BaseTask[A]
+	*BaseTask[A]
 	Fn ActionFn[A]
 }
 
 type CodedActionTask[A Actor] struct {
-	ActionTask[A]
+	*ActionTask[A]
 	Validator HookFn[A]
 	CodeIndex int
+}
+
+// Create cmd actionConfig
+func cmdActionConfig[A Actor](task *ActionTask[A]) *actionConfig[A, []string] {
+	cfg := &actionConfig[A, []string]{}
+	cfg.initialize = task.cmdInitialize
+	cfg.errorFn = cmdDisplayError
+	cfg.outputFn = func(args []string, rq *ze.Request, err error) {
+		krap.DisplayOutput(rq, err)
+	}
+	return cfg
+}
+
+// Create web actionConfig
+func webActionConfig[A Actor](task *ActionTask[A]) *actionConfig[A, *gin.Context] {
+	cfg := &actionConfig[A, *gin.Context]{}
+	cfg.initialize = task.webInitialize
+	cfg.errorFn = krap.SendActionError
+	cfg.outputFn = krap.SendActionResponse
+	return cfg
 }
 
 // Creates new ActionTask
@@ -37,62 +63,28 @@ func NewCodedActionTask[A Actor](action, item string, fn ActionFn[A], codeIndex 
 	return task
 }
 
-// Attach CmdDecorator to ActionTask, Return task to be chainable
-func (t *ActionTask[A]) WithCmd(cmdDecorator CmdDecorator[A]) *ActionTask[A] {
-	t.CmdDecorator = cmdDecorator
-	return t
-}
-
-// Attach WebDecorator to ActionTask, Return task to be chainable
-func (t *ActionTask[A]) WithWeb(webDecorator WebDecorator[A]) *ActionTask[A] {
-	t.WebDecorator = webDecorator
-	return t
-}
-
-// Attach CmdDecorator to CodedActionTask, Return task to be chainable
-func (t *CodedActionTask[A]) WithCmd(cmdDecorator CmdDecorator[A]) *CodedActionTask[A] {
-	t.CmdDecorator = cmdDecorator
-	return t
-}
-
-// Attach WebDecorator to CodedActionTask, Return task to be chainable
-func (t *CodedActionTask[A]) WithWeb(webDecorator WebDecorator[A]) *CodedActionTask[A] {
-	t.WebDecorator = webDecorator
-	return t
-}
-
-// Attach HookFn to CodedActonTask, Return task to be chainable
-func (t *CodedActionTask[A]) WithValidator(hookFn HookFn[A]) *CodedActionTask[A] {
-	t.Validator = hookFn
-	return t
+// Attach HookFn to CodedActonTask
+func (task *CodedActionTask[A]) WithValidator(hookFn HookFn[A]) {
+	task.Validator = hookFn
 }
 
 // ActionTask CmdHandler
 func (task ActionTask[A]) CmdHandler() root.CmdHandler {
-	return func(args []string) {
-		// Initialize
-		rq, params, actor, err := task.cmdInitialize(args)
-		if err != nil {
-			krap.DisplayError(err)
-			return
-		}
-		// Check Authorization
-		err = authz.CheckActionAllowedFor(rq, (*actor).GetRole())
-		if err == nil {
-			// Perform action if authorized
-			err = task.Fn(rq, params, actor)
-		}
-		krap.DisplayOutput(rq, err)
-	}
+	return actionTaskHandler(task, cmdActionConfig(&task))
 }
 
 // ActionTask WebHandler
 func (task ActionTask[A]) WebHandler() gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return actionTaskHandler(task, webActionConfig(&task))
+}
+
+// Common: create ActionTask Handler
+func actionTaskHandler[A Actor, P any](task ActionTask[A], cfg *actionConfig[A, P]) func(P) {
+	return func(p P) {
 		// Initialize
-		rq, params, actor, err := task.webInitialize(c)
+		rq, params, actor, err := cfg.initialize(p)
 		if err != nil {
-			krap.SendActionError(c, rq, err)
+			cfg.errorFn(p, rq, err)
 			return
 		}
 		// Check Authorization
@@ -101,59 +93,45 @@ func (task ActionTask[A]) WebHandler() gin.HandlerFunc {
 			// Perform action if authorized
 			err = task.Fn(rq, params, actor)
 		}
-		krap.SendActionResponse(c, rq, err)
+		cfg.outputFn(p, rq, err)
 	}
 }
 
 // CodedActionTask CmdHandler
 func (task CodedActionTask[A]) CmdHandler() root.CmdHandler {
-	return func(args []string) {
-		// Initialize
-		rq, params, actor, err := task.cmdInitialize(args)
-		if err != nil {
-			krap.DisplayError(err)
-			return
-		}
-		if task.Validator == nil {
-			krap.DisplayError(errMissingHook)
-			return
-		}
-		// Get code and call hook
-		code := getCode(args, task.CodeIndex)
-		params, err = task.Validator(rq, params, actor, task.Task, code, 0)
-		if err != nil {
-			krap.DisplayError(err)
-			return
-		}
-		// Perform action
-		err = task.Fn(rq, params, actor)
-		krap.DisplayOutput(rq, err)
+	codeFn := func(args []string) string {
+		return getCode(args, task.CodeIndex)
 	}
+	return codedActionTaskHandler(task, cmdActionConfig(task.ActionTask), codeFn)
 }
 
 // CodedActionTask WebHandler
 func (task CodedActionTask[A]) WebHandler() gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return codedActionTaskHandler(task, webActionConfig(task.ActionTask), krap.WebCodeParam)
+}
+
+// Common: create CodedActionTask Handler
+func codedActionTaskHandler[A Actor, P any](task CodedActionTask[A], cfg *actionConfig[A, P], codeFn func(P) string) func(P) {
+	return func(p P) {
 		// Initialize
-		rq, params, actor, err := task.webInitialize(c)
+		rq, params, actor, err := cfg.initialize(p)
 		if err != nil {
-			krap.SendActionError(c, rq, err)
+			cfg.errorFn(p, rq, err)
 			return
 		}
 		if task.Validator == nil {
-			krap.SendActionError(c, rq, errMissingHook)
+			cfg.errorFn(p, rq, errMissingHook)
 			return
 		}
-		// Get code and call hook
-		// Import: Code needs to be WebCodeParam
-		code := krap.WebCodeParam(c)
+		// Get code and call validator
+		code := codeFn(p)
 		params, err = task.Validator(rq, params, actor, task.Task, code, 0)
 		if err != nil {
-			krap.SendActionError(c, rq, err)
+			cfg.errorFn(p, rq, err)
 			return
 		}
 		// Perform action
 		err = task.Fn(rq, params, actor)
-		krap.SendActionResponse(c, rq, err)
+		cfg.outputFn(p, rq, err)
 	}
 }

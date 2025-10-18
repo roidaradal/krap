@@ -43,6 +43,26 @@ type (
 	WebDecorator[A Actor] = func(*gin.Context, Params) (Params, *A, error)
 )
 
+// Attach CmdDecorator to BaseTask
+func (t *BaseTask[A]) WithCmd(cmdDecorator CmdDecorator[A]) {
+	t.CmdDecorator = cmdDecorator
+}
+
+// Attach WebDecorator to BaseTask
+func (t *BaseTask[A]) WithWeb(webDecorator WebDecorator[A]) {
+	t.WebDecorator = webDecorator
+}
+
+// Attach CmdDecorator to BaseTaskToken
+func (t *BaseTaskToken) WithCmd(cmdDecorator CmdDecoratorToken) {
+	t.CmdDecorator = cmdDecorator
+}
+
+// Attach WebDecorator to BaseTaskToken
+func (t *BaseTaskToken) WithWeb(webDecorator WebDecoratorToken) {
+	t.WebDecorator = webDecorator
+}
+
 type CmdHandler interface {
 	CmdHandler() root.CmdHandler
 }

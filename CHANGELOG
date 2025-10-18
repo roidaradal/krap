@@ -1,3 +1,9 @@
+v0.2.15 - ComboTask & ListTask 
+    x Commit: 2025-10-18 14:44
+    x Move WithCmd, WithWeb to BaseTask 
+    x ComboTask, NewComboTask 
+    x ListTask, NewListTask 
+    x CodedListTask, NewCodedListTask
 v0.2.14 - Authz CheckAction Params 
     x Commit: 2025-10-18 11:46
     x Remove action, item from params, check in rq instead 
