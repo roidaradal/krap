@@ -81,4 +81,9 @@ type (
 type HookFn[A Actor] = func(*ze.Request, Params, *A, string) (Params, error)
 
 // Request, Params, Actor, Schema, Code, ID
-type TypedHookFn[A Actor, T any] = func(*ze.Request, Params, *A, *ze.Schema[T], string) (Params, error)
+type TypedHookFn[A Actor, T any] = func(*ze.Request, Params, *A, *ze.Schema[T], Store[T], string) (Params, error)
+
+type Store[T any] interface {
+	GetByCode(string) (*T, bool)
+	Add(*T)
+}

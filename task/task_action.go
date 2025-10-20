@@ -29,6 +29,7 @@ type TypedActionTask[A Actor, T any] struct {
 	Validator TypedHookFn[A, T]
 	CodeIndex int
 	*ze.Schema[T]
+	Store Store[T]
 }
 
 // Create cmd actionConfig
@@ -71,13 +72,14 @@ func NewCodedActionTask[A Actor](action, item string, fn ActionFn[A], codeIndex 
 }
 
 // Creates new TypedActionTask
-func NewTypedActionTask[A Actor, T any](action, item string, fn ActionFn[A], codeIndex int, schema *ze.Schema[T]) *TypedActionTask[A, T] {
+func NewTypedActionTask[A Actor, T any](action, item string, fn ActionFn[A], codeIndex int, schema *ze.Schema[T], store Store[T]) *TypedActionTask[A, T] {
 	task := &TypedActionTask[A, T]{}
 	task.Action = action
 	task.Item = item
 	task.Fn = fn
 	task.CodeIndex = codeIndex
 	task.Schema = schema
+	task.Store = store
 	return task
 }
 
@@ -187,7 +189,7 @@ func typedActionTaskHandler[A Actor, T any, P any](task *TypedActionTask[A, T], 
 		}
 		// Get code and call validator
 		code := codeFn(p)
-		params, err = task.Validator(rq, params, actor, task.Schema, code)
+		params, err = task.Validator(rq, params, actor, task.Schema, task.Store, code)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
