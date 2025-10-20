@@ -78,4 +78,7 @@ type (
 )
 
 // Request, Params, Actor, Code, ID
-type HookFn[A Actor] = func(*ze.Request, Params, *A, string, ze.ID) (Params, error)
+type HookFn[A Actor] = func(*ze.Request, Params, *A, string) (Params, error)
+
+// Request, Params, Actor, Schema, Code, ID
+type TypedHookFn[A Actor, T any] = func(*ze.Request, Params, *A, *ze.Schema[T], string) (Params, error)

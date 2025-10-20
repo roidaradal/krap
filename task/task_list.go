@@ -131,7 +131,7 @@ func codedListTaskHandler[A Actor, T any, P any](task *CodedListTask[A, T], cfg 
 		}
 		// Get code and call validator
 		code := codeFn(p)
-		params, err = task.Validator(rq, params, actor, code, 0)
+		params, err = task.Validator(rq, params, actor, code)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return

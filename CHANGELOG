@@ -1,3 +1,9 @@
+v0.2.20 - DataTask 
+    x Commit: 2025-10-20 15:28
+    x DataTask, NewDataTask
+    x CodedDataTask, NewCodedDataTask
+    x TypedHookFn
+    x TypedActionTask, NewTypedActionTask
 v0.2.19 - Update CodedViewTask
     x Commit: 2025-10-20 12:05
     x Update CodedViewTask

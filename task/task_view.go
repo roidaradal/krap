@@ -129,7 +129,7 @@ func codedViewTaskHandler[A Actor, T any, P any](task *CodedViewTask[A, T], cfg 
 		// Check validator, if it exists
 		if task.Validator != nil {
 			code := codeFn(p)
-			params, err = task.Validator(rq, params, actor, code, 0)
+			params, err = task.Validator(rq, params, actor, code)
 			if err != nil {
 				cfg.errorFn(p, rq, err)
 				return
