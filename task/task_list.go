@@ -20,12 +20,12 @@ type codedListConfig[A Actor, T any, P any] struct {
 }
 
 type ListTask[T any] struct {
-	*BaseDataTask
+	*BaseDataTokenTask
 	Fn ListFn[T]
 }
 
 type CodedListTask[A Actor, T any] struct {
-	*BaseTask[A]
+	*BaseDataTask[A]
 	Fn        ListFn[T]
 	Validator HookFn[A]
 	CodeIndex int
@@ -131,7 +131,7 @@ func codedListTaskHandler[A Actor, T any, P any](task *CodedListTask[A, T], cfg 
 		}
 		// Get code and call validator
 		code := codeFn(p)
-		params, err = task.Validator(rq, params, actor, task.Task, code, 0)
+		params, err = task.Validator(rq, params, actor, code, 0)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return

@@ -31,12 +31,22 @@ func (t *BaseTask[A]) WithWeb(webDecorator WebDecorator[A]) {
 }
 
 // Attach CmdDecorator to BaseDataTask
-func (t *BaseDataTask) WithCmd(cmdDecorator CmdDataDecorator) {
+func (t *BaseDataTask[A]) WithCmd(cmdDecorator CmdDataDecorator[A]) {
 	t.CmdDecorator = cmdDecorator
 }
 
 // Attach WebDecorator to BaseDataTask
-func (t *BaseDataTask) WithWeb(webDecorator WebDataDecorator) {
+func (t *BaseDataTask[A]) WithWeb(webDecorator WebDataDecorator[A]) {
+	t.WebDecorator = webDecorator
+}
+
+// Attach CmdDecorator to BaseDataTokenTask
+func (t *BaseDataTokenTask) WithCmd(cmdDecorator CmdDataTokenDecorator) {
+	t.CmdDecorator = cmdDecorator
+}
+
+// Attach WebDecorator to BaseDataTokenTask
+func (t *BaseDataTokenTask) WithWeb(webDecorator WebDataTokenDecorator) {
 	t.WebDecorator = webDecorator
 }
 
@@ -61,7 +71,27 @@ func initialize[A Actor](task BaseTask[A], params Params, actor *A, err error) (
 }
 
 // Common BaseDataTask initialize process (cmd or web)
-func initializeData(task BaseDataTask, params Params, authToken *authn.Token, mustBeActive bool, err error) (*ze.Request, Params, *authn.Token, error) {
+func initializeData[A Actor](task BaseDataTask[A], params Params, actor *A, mustBeActive bool, err error) (*ze.Request, Params, *A, error) {
+	if err == nil && actor == nil {
+		err = ErrInvalidActor
+	}
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	// Create request
+	name := itemPrefix(task.Item)
+	rq, err := ze.NewRequest(name)
+	if err != nil {
+		return rq, nil, nil, err
+	}
+	// Attach action, item to request
+	rq.Action = fn.Ternary(mustBeActive, authz.VIEW, authz.ROWS)
+	rq.Item = task.Item
+	return rq, params, actor, nil
+}
+
+// Common BaseDataTokenTask initialize process (cmd or web)
+func initializeDataToken(task BaseDataTokenTask, params Params, authToken *authn.Token, mustBeActive bool, err error) (*ze.Request, Params, *authn.Token, error) {
 	if err == nil && authToken == nil {
 		err = authn.ErrInvalidSession
 	}
@@ -97,19 +127,35 @@ func (task BaseTask[A]) webInitialize(c *gin.Context) (*ze.Request, Params, *A, 
 }
 
 // Initialize for BaseDataTask CmdHandler
-func (task BaseDataTask) cmdInitialize(args []string) (*ze.Request, Params, *authn.Token, error) {
+func (task BaseDataTask[A]) cmdInitialize(args []string) (*ze.Request, Params, *A, error) {
 	// Decorate the params
 	params := make(Params)
-	params, authToken, mustBeActive, err := task.CmdDecorator(args, params)
-	return initializeData(task, params, authToken, mustBeActive, err)
+	params, actor, mustBeActive, err := task.CmdDecorator(args, params)
+	return initializeData(task, params, actor, mustBeActive, err)
 }
 
 // Initialize for BaseDataTask WebHandler
-func (task BaseDataTask) webInitialize(c *gin.Context) (*ze.Request, Params, *authn.Token, error) {
+func (task BaseDataTask[A]) webInitialize(c *gin.Context) (*ze.Request, Params, *A, error) {
+	// Decorate the params
+	params := make(Params)
+	params, actor, mustBeActive, err := task.WebDecorator(c, params)
+	return initializeData(task, params, actor, mustBeActive, err)
+}
+
+// Initialize for BaseDataTokenTask CmdHandler
+func (task BaseDataTokenTask) cmdInitialize(args []string) (*ze.Request, Params, *authn.Token, error) {
+	// Decorate the params
+	params := make(Params)
+	params, authToken, mustBeActive, err := task.CmdDecorator(args, params)
+	return initializeDataToken(task, params, authToken, mustBeActive, err)
+}
+
+// Initialize for BaseDataTokenTask WebHandler
+func (task BaseDataTokenTask) webInitialize(c *gin.Context) (*ze.Request, Params, *authn.Token, error) {
 	// Decorate the params
 	params := make(Params)
 	params, authToken, mustBeActive, err := task.WebDecorator(c, params)
-	return initializeData(task, params, authToken, mustBeActive, err)
+	return initializeDataToken(task, params, authToken, mustBeActive, err)
 }
 
 // Get code from args string list on index

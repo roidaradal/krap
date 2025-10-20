@@ -30,17 +30,25 @@ type BaseTask[A Actor] struct {
 	WebDecorator WebDecorator[A]
 }
 
-type BaseDataTask struct {
+type BaseDataTask[A Actor] struct {
 	ze.Task
-	CmdDecorator CmdDataDecorator
-	WebDecorator WebDataDecorator
+	CmdDecorator CmdDataDecorator[A]
+	WebDecorator WebDataDecorator[A]
+}
+
+type BaseDataTokenTask struct {
+	ze.Task
+	CmdDecorator CmdDataTokenDecorator
+	WebDecorator WebDataTokenDecorator
 }
 
 type (
-	CmdDecorator[A Actor] = func([]string, Params) (Params, *A, error)
-	WebDecorator[A Actor] = func(*gin.Context, Params) (Params, *A, error)
-	CmdDataDecorator      = func([]string, Params) (Params, *authn.Token, bool, error)
-	WebDataDecorator      = func(*gin.Context, Params) (Params, *authn.Token, bool, error)
+	CmdDecorator[A Actor]     = func([]string, Params) (Params, *A, error)
+	WebDecorator[A Actor]     = func(*gin.Context, Params) (Params, *A, error)
+	CmdDataDecorator[A Actor] = func([]string, Params) (Params, *A, bool, error)
+	WebDataDecorator[A Actor] = func(*gin.Context, Params) (Params, *A, bool, error)
+	CmdDataTokenDecorator     = func([]string, Params) (Params, *authn.Token, bool, error)
+	WebDataTokenDecorator     = func(*gin.Context, Params) (Params, *authn.Token, bool, error)
 )
 
 type CmdHandler interface {
@@ -62,4 +70,4 @@ type (
 )
 
 // Request, Params, Actor, Code, ID
-type HookFn[A Actor] = func(*ze.Request, Params, *A, ze.Task, string, ze.ID) (Params, error)
+type HookFn[A Actor] = func(*ze.Request, Params, *A, string, ze.ID) (Params, error)

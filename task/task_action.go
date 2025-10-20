@@ -125,7 +125,7 @@ func codedActionTaskHandler[A Actor, P any](task *CodedActionTask[A], cfg *actio
 		}
 		// Get code and call validator
 		code := codeFn(p)
-		params, err = task.Validator(rq, params, actor, task.Task, code, 0)
+		params, err = task.Validator(rq, params, actor, code, 0)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
