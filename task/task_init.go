@@ -5,8 +5,10 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/roidaradal/fn"
 	"github.com/roidaradal/fn/str"
 	"github.com/roidaradal/krap/authn"
+	"github.com/roidaradal/krap/authz"
 	"github.com/roidaradal/rdb/ze"
 )
 
@@ -17,6 +19,26 @@ var (
 	ErrInvalidOption = errors.New("public: Invalid option")
 	errMissingHook   = errors.New("missing hook")
 )
+
+// Attach CmdDecorator to BaseTask
+func (t *BaseTask[A]) WithCmd(cmdDecorator CmdDecorator[A]) {
+	t.CmdDecorator = cmdDecorator
+}
+
+// Attach WebDecorator to BaseTask
+func (t *BaseTask[A]) WithWeb(webDecorator WebDecorator[A]) {
+	t.WebDecorator = webDecorator
+}
+
+// Attach CmdDecorator to BaseDataTask
+func (t *BaseDataTask) WithCmd(cmdDecorator CmdDataDecorator) {
+	t.CmdDecorator = cmdDecorator
+}
+
+// Attach WebDecorator to BaseDataTask
+func (t *BaseDataTask) WithWeb(webDecorator WebDataDecorator) {
+	t.WebDecorator = webDecorator
+}
 
 // Common BaseTask initialization process (cmd or web)
 func initialize[A Actor](task BaseTask[A], params Params, actor *A, err error) (*ze.Request, Params, *A, error) {
@@ -38,8 +60,8 @@ func initialize[A Actor](task BaseTask[A], params Params, actor *A, err error) (
 	return rq, params, actor, nil
 }
 
-// Common BaseTaskToken initialize process (cmd or web)
-func initializeToken(task BaseTaskToken, params Params, authToken *authn.Token, err error) (*ze.Request, Params, *authn.Token, error) {
+// Common BaseDataTask initialize process (cmd or web)
+func initializeData(task BaseDataTask, params Params, authToken *authn.Token, mustBeActive bool, err error) (*ze.Request, Params, *authn.Token, error) {
 	if err == nil && authToken == nil {
 		err = authn.ErrInvalidSession
 	}
@@ -53,7 +75,7 @@ func initializeToken(task BaseTaskToken, params Params, authToken *authn.Token, 
 		return rq, nil, nil, err
 	}
 	// Attach action, item to request
-	rq.Action = task.Action
+	rq.Action = fn.Ternary(mustBeActive, authz.VIEW, authz.ROWS)
 	rq.Item = task.Item
 	return rq, params, authToken, nil
 }
@@ -74,20 +96,20 @@ func (task BaseTask[A]) webInitialize(c *gin.Context) (*ze.Request, Params, *A, 
 	return initialize(task, params, actor, err)
 }
 
-// Initialize for BaseTaskToken CmdHandler
-func (task BaseTaskToken) cmdInitialize(args []string) (*ze.Request, Params, *authn.Token, error) {
+// Initialize for BaseDataTask CmdHandler
+func (task BaseDataTask) cmdInitialize(args []string) (*ze.Request, Params, *authn.Token, error) {
 	// Decorate the params
 	params := make(Params)
-	params, authToken, err := task.CmdDecorator(args, params)
-	return initializeToken(task, params, authToken, err)
+	params, authToken, mustBeActive, err := task.CmdDecorator(args, params)
+	return initializeData(task, params, authToken, mustBeActive, err)
 }
 
-// Initialize for BaseTaskToken WebHandler
-func (task BaseTaskToken) webInitialize(c *gin.Context) (*ze.Request, Params, *authn.Token, error) {
+// Initialize for BaseDataTask WebHandler
+func (task BaseDataTask) webInitialize(c *gin.Context) (*ze.Request, Params, *authn.Token, error) {
 	// Decorate the params
 	params := make(Params)
-	params, authToken, err := task.WebDecorator(c, params)
-	return initializeToken(task, params, authToken, err)
+	params, authToken, mustBeActive, err := task.WebDecorator(c, params)
+	return initializeData(task, params, authToken, mustBeActive, err)
 }
 
 // Get code from args string list on index

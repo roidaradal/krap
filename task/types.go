@@ -18,10 +18,10 @@ type Actor interface {
 }
 
 type (
-	ActionFn[A Actor]       = func(*ze.Request, Params, *A) error
-	ComboFn[A Actor, T any] = func(*ze.Request, Params, *A) (*T, error)
-	DataFn[T any]           = func(*ze.Request, Params) (*T, error)
-	ListFn[T any]           = func(*ze.Request, Params) (*ds.List[*T], error)
+	TaskFn[A Actor, T any] = func(*ze.Request, Params, *A) (*T, error)
+	ActionFn[A Actor]      = func(*ze.Request, Params, *A) error
+	DataFn[T any]          = func(*ze.Request, Params) (*T, error)
+	ListFn[T any]          = func(*ze.Request, Params) (*ds.List[*T], error)
 )
 
 type BaseTask[A Actor] struct {
@@ -30,38 +30,18 @@ type BaseTask[A Actor] struct {
 	WebDecorator WebDecorator[A]
 }
 
-type BaseTaskToken struct {
+type BaseDataTask struct {
 	ze.Task
-	CmdDecorator CmdDecoratorToken
-	WebDecorator WebDecoratorToken
+	CmdDecorator CmdDataDecorator
+	WebDecorator WebDataDecorator
 }
 
 type (
-	CmdDecoratorToken     = func([]string, Params) (Params, *authn.Token, error)
-	WebDecoratorToken     = func(*gin.Context, Params) (Params, *authn.Token, error)
 	CmdDecorator[A Actor] = func([]string, Params) (Params, *A, error)
 	WebDecorator[A Actor] = func(*gin.Context, Params) (Params, *A, error)
+	CmdDataDecorator      = func([]string, Params) (Params, *authn.Token, bool, error)
+	WebDataDecorator      = func(*gin.Context, Params) (Params, *authn.Token, bool, error)
 )
-
-// Attach CmdDecorator to BaseTask
-func (t *BaseTask[A]) WithCmd(cmdDecorator CmdDecorator[A]) {
-	t.CmdDecorator = cmdDecorator
-}
-
-// Attach WebDecorator to BaseTask
-func (t *BaseTask[A]) WithWeb(webDecorator WebDecorator[A]) {
-	t.WebDecorator = webDecorator
-}
-
-// Attach CmdDecorator to BaseTaskToken
-func (t *BaseTaskToken) WithCmd(cmdDecorator CmdDecoratorToken) {
-	t.CmdDecorator = cmdDecorator
-}
-
-// Attach WebDecorator to BaseTaskToken
-func (t *BaseTaskToken) WithWeb(webDecorator WebDecoratorToken) {
-	t.WebDecorator = webDecorator
-}
 
 type CmdHandler interface {
 	CmdHandler() root.CmdHandler

@@ -8,20 +8,20 @@ import (
 	"github.com/roidaradal/rdb/ze"
 )
 
-type comboConfig[A Actor, T any, P any] struct {
+type taskConfig[A Actor, T any, P any] struct {
 	*baseConfig[A, P]
 	outputFn func(P, *T, *ze.Request, error)
 }
 
-type ComboTask[A Actor, T any] struct {
+type FullTask[A Actor, T any] struct {
 	*BaseTask[A]
-	Fn               ComboFn[A, T]
+	Fn               TaskFn[A, T]
 	DeferActionCheck bool
 }
 
-// Create cmd comboConfig
-func cmdComboConfig[A Actor, T any](task *ComboTask[A, T]) *comboConfig[A, T, []string] {
-	cfg := &comboConfig[A, T, []string]{}
+// Create cmd taskConfig
+func cmdTaskConfig[A Actor, T any](task *FullTask[A, T]) *taskConfig[A, T, []string] {
+	cfg := &taskConfig[A, T, []string]{}
 	cfg.initialize = task.cmdInitialize
 	cfg.errorFn = cmdDisplayError
 	cfg.outputFn = func(args []string, item *T, rq *ze.Request, err error) {
@@ -30,18 +30,18 @@ func cmdComboConfig[A Actor, T any](task *ComboTask[A, T]) *comboConfig[A, T, []
 	return cfg
 }
 
-// Create web comboConfig
-func webComboConfig[A Actor, T any](task *ComboTask[A, T]) *comboConfig[A, T, *gin.Context] {
-	cfg := &comboConfig[A, T, *gin.Context]{}
+// Create web taskConfig
+func webTaskConfig[A Actor, T any](task *FullTask[A, T]) *taskConfig[A, T, *gin.Context] {
+	cfg := &taskConfig[A, T, *gin.Context]{}
 	cfg.initialize = task.webInitialize
 	cfg.errorFn = krap.SendDataError
 	cfg.outputFn = krap.SendDataResponse
 	return cfg
 }
 
-// Creates new ComboTask
-func NewComboTask[A Actor, T any](action, item string, fn ComboFn[A, T], deferActionCheck bool) *ComboTask[A, T] {
-	task := &ComboTask[A, T]{}
+// Creates new FullTask
+func NewFullTask[A Actor, T any](action, item string, fn TaskFn[A, T], deferActionCheck bool) *FullTask[A, T] {
+	task := &FullTask[A, T]{}
 	task.Action = action
 	task.Item = item
 	task.Fn = fn
@@ -49,18 +49,18 @@ func NewComboTask[A Actor, T any](action, item string, fn ComboFn[A, T], deferAc
 	return task
 }
 
-// ComboTask CmdHandler
-func (task ComboTask[A, T]) CmdHandler() root.CmdHandler {
-	return comboTaskHandler(task, cmdComboConfig(&task))
+// FullTask CmdHandler
+func (task FullTask[A, T]) CmdHandler() root.CmdHandler {
+	return fullTaskHandler(&task, cmdTaskConfig(&task))
 }
 
-// ComboTask WebHandler
-func (task ComboTask[A, T]) WebHandler() gin.HandlerFunc {
-	return comboTaskHandler(task, webComboConfig(&task))
+// FullTask WebHandler
+func (task FullTask[A, T]) WebHandler() gin.HandlerFunc {
+	return fullTaskHandler(&task, webTaskConfig(&task))
 }
 
-// Common: create ComboTask Handler
-func comboTaskHandler[A Actor, T any, P any](task ComboTask[A, T], cfg *comboConfig[A, T, P]) func(P) {
+// Common: create FullTask Handler
+func fullTaskHandler[A Actor, T any, P any](task *FullTask[A, T], cfg *taskConfig[A, T, P]) func(P) {
 	return func(p P) {
 		// Initialize
 		rq, params, actor, err := cfg.initialize(p)

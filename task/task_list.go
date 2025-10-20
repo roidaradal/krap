@@ -10,7 +10,7 @@ import (
 )
 
 type listConfig[T any, P any] struct {
-	*baseTokenConfig[P]
+	*baseDataConfig[P]
 	outputFn func(P, *ds.List[*T], *ze.Request, error)
 }
 
@@ -20,7 +20,7 @@ type codedListConfig[A Actor, T any, P any] struct {
 }
 
 type ListTask[T any] struct {
-	*BaseTaskToken
+	*BaseDataTask
 	Fn ListFn[T]
 }
 
@@ -32,18 +32,16 @@ type CodedListTask[A Actor, T any] struct {
 }
 
 // Creates new ListTask
-func NewListTask[T any](action, item string, fn ListFn[T]) *ListTask[T] {
+func NewListTask[T any](item string, fn ListFn[T]) *ListTask[T] {
 	task := &ListTask[T]{}
-	task.Action = action
 	task.Item = item
 	task.Fn = fn
 	return task
 }
 
 // Creates new CodedListTask
-func NewCodedListTask[A Actor, T any](action, item string, fn ListFn[T], codeIndex int) *CodedListTask[A, T] {
+func NewCodedListTask[A Actor, T any](item string, fn ListFn[T], codeIndex int) *CodedListTask[A, T] {
 	task := &CodedListTask[A, T]{}
-	task.Action = action
 	task.Item = item
 	task.Fn = fn
 	task.CodeIndex = codeIndex
@@ -63,7 +61,7 @@ func (task ListTask[T]) CmdHandler() root.CmdHandler {
 	cfg.outputFn = func(args []string, list *ds.List[*T], rq *ze.Request, err error) {
 		krap.DisplayList(list, rq, err)
 	}
-	return listTaskHandler(task, cfg)
+	return listTaskHandler(&task, cfg)
 }
 
 // ListTask WebHandler
@@ -72,11 +70,11 @@ func (task ListTask[T]) WebHandler() gin.HandlerFunc {
 	cfg.initialize = task.webInitialize
 	cfg.errorFn = krap.SendDataError
 	cfg.outputFn = krap.SendDataResponse
-	return listTaskHandler(task, cfg)
+	return listTaskHandler(&task, cfg)
 }
 
 // Common: create ListTask Handler
-func listTaskHandler[T any, P any](task ListTask[T], cfg *listConfig[T, P]) func(P) {
+func listTaskHandler[T any, P any](task *ListTask[T], cfg *listConfig[T, P]) func(P) {
 	return func(p P) {
 		// Initialize
 		rq, params, authToken, err := cfg.initialize(p)
@@ -106,7 +104,7 @@ func (task CodedListTask[A, T]) CmdHandler() root.CmdHandler {
 	codeFn := func(args []string) string {
 		return getCode(args, task.CodeIndex)
 	}
-	return codedListTaskHandler(task, cfg, codeFn)
+	return codedListTaskHandler(&task, cfg, codeFn)
 }
 
 // CodedListTask WebHandler
@@ -115,11 +113,11 @@ func (task CodedListTask[A, T]) WebHandler() gin.HandlerFunc {
 	cfg.initialize = task.webInitialize
 	cfg.errorFn = krap.SendDataError
 	cfg.outputFn = krap.SendDataResponse
-	return codedListTaskHandler(task, cfg, krap.WebCodeParam)
+	return codedListTaskHandler(&task, cfg, krap.WebCodeParam)
 }
 
 // Common: create CodedListTask Handler
-func codedListTaskHandler[A Actor, T any, P any](task CodedListTask[A, T], cfg *codedListConfig[A, T, P], codeFn func(P) string) func(P) {
+func codedListTaskHandler[A Actor, T any, P any](task *CodedListTask[A, T], cfg *codedListConfig[A, T, P], codeFn func(P) string) func(P) {
 	return func(p P) {
 		// Initialize
 		rq, params, actor, err := cfg.initialize(p)

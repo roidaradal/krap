@@ -15,7 +15,7 @@ type baseConfig[A Actor, P any] struct {
 	errorFn    func(P, *ze.Request, error)
 }
 
-type baseTokenConfig[P any] struct {
+type baseDataConfig[P any] struct {
 	initialize func(P) (*ze.Request, Params, *authn.Token, error)
 	errorFn    func(P, *ze.Request, error)
 }

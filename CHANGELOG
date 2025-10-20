@@ -1,3 +1,7 @@
+v0.2.16 - ListTask Adjustment 
+    x Commit: 2025-10-20 08:33
+    x Adjust ListTask Decorators to return bool (mustBeActive)
+    x Fork the action: mustBeActive ? view : rows 
 v0.2.15 - ComboTask & ListTask 
     x Commit: 2025-10-18 14:44
     x Move WithCmd, WithWeb to BaseTask 

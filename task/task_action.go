@@ -70,16 +70,16 @@ func (task *CodedActionTask[A]) WithValidator(hookFn HookFn[A]) {
 
 // ActionTask CmdHandler
 func (task ActionTask[A]) CmdHandler() root.CmdHandler {
-	return actionTaskHandler(task, cmdActionConfig(&task))
+	return actionTaskHandler(&task, cmdActionConfig(&task))
 }
 
 // ActionTask WebHandler
 func (task ActionTask[A]) WebHandler() gin.HandlerFunc {
-	return actionTaskHandler(task, webActionConfig(&task))
+	return actionTaskHandler(&task, webActionConfig(&task))
 }
 
 // Common: create ActionTask Handler
-func actionTaskHandler[A Actor, P any](task ActionTask[A], cfg *actionConfig[A, P]) func(P) {
+func actionTaskHandler[A Actor, P any](task *ActionTask[A], cfg *actionConfig[A, P]) func(P) {
 	return func(p P) {
 		// Initialize
 		rq, params, actor, err := cfg.initialize(p)
@@ -102,16 +102,16 @@ func (task CodedActionTask[A]) CmdHandler() root.CmdHandler {
 	codeFn := func(args []string) string {
 		return getCode(args, task.CodeIndex)
 	}
-	return codedActionTaskHandler(task, cmdActionConfig(task.ActionTask), codeFn)
+	return codedActionTaskHandler(&task, cmdActionConfig(task.ActionTask), codeFn)
 }
 
 // CodedActionTask WebHandler
 func (task CodedActionTask[A]) WebHandler() gin.HandlerFunc {
-	return codedActionTaskHandler(task, webActionConfig(task.ActionTask), krap.WebCodeParam)
+	return codedActionTaskHandler(&task, webActionConfig(task.ActionTask), krap.WebCodeParam)
 }
 
 // Common: create CodedActionTask Handler
-func codedActionTaskHandler[A Actor, P any](task CodedActionTask[A], cfg *actionConfig[A, P], codeFn func(P) string) func(P) {
+func codedActionTaskHandler[A Actor, P any](task *CodedActionTask[A], cfg *actionConfig[A, P], codeFn func(P) string) func(P) {
 	return func(p P) {
 		// Initialize
 		rq, params, actor, err := cfg.initialize(p)
