@@ -24,7 +24,7 @@ type ViewTask[T any] struct {
 }
 
 type CodedViewTask[A Actor, T any] struct {
-	*BaseDataTask[A]
+	*BaseTask[A]
 	Fn        DataFn[T]
 	Validator HookFn[A]
 	CodeIndex int
