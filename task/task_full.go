@@ -9,7 +9,7 @@ import (
 )
 
 type taskConfig[A Actor, T any, P any] struct {
-	*baseConfig[A, P]
+	*baseActorConfig[A, P]
 	outputFn func(P, *T, *ze.Request, error)
 }
 

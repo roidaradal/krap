@@ -10,12 +10,12 @@ import (
 	"github.com/roidaradal/rdb/ze"
 )
 
-type baseConfig[A Actor, P any] struct {
+type baseActorConfig[A Actor, P any] struct {
 	initialize func(P) (*ze.Request, Params, *A, error)
 	errorFn    func(P, *ze.Request, error)
 }
 
-type baseDataConfig[P any] struct {
+type baseTokenConfig[P any] struct {
 	initialize func(P) (*ze.Request, Params, *authn.Token, error)
 	errorFn    func(P, *ze.Request, error)
 }

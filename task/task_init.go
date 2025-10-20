@@ -30,6 +30,16 @@ func (t *BaseTask[A]) WithWeb(webDecorator WebDecorator[A]) {
 	t.WebDecorator = webDecorator
 }
 
+// Attach CmdDecorator to BaseTokenTask
+func (t *BaseTokenTask) WithCmd(cmdDecorator CmdTokenDecorator) {
+	t.CmdDecorator = cmdDecorator
+}
+
+// Attach WebDecorator to BaseTokenTask
+func (t *BaseTokenTask) WithWeb(webDecorator WebTokenDecorator) {
+	t.WebDecorator = webDecorator
+}
+
 // Attach CmdDecorator to BaseDataTask
 func (t *BaseDataTask[A]) WithCmd(cmdDecorator CmdDataDecorator[A]) {
 	t.CmdDecorator = cmdDecorator
@@ -68,6 +78,26 @@ func initialize[A Actor](task BaseTask[A], params Params, actor *A, err error) (
 	rq.Action = task.Action
 	rq.Item = task.Item
 	return rq, params, actor, nil
+}
+
+// Common BaseTokenTask initialization process (cmd or web)
+func initializeToken(task BaseTokenTask, params Params, authToken *authn.Token, err error) (*ze.Request, Params, *authn.Token, error) {
+	if err == nil && authToken == nil {
+		err = authn.ErrInvalidSession
+	}
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	// Create request
+	name := itemPrefix(task.Item)
+	rq, err := ze.NewRequest(name)
+	if err != nil {
+		return rq, nil, nil, err
+	}
+	// Attach action, item to request
+	rq.Action = task.Action
+	rq.Item = task.Item
+	return rq, params, authToken, nil
 }
 
 // Common BaseDataTask initialize process (cmd or web)
@@ -124,6 +154,22 @@ func (task BaseTask[A]) webInitialize(c *gin.Context) (*ze.Request, Params, *A, 
 	params := make(Params)
 	params, actor, err := task.WebDecorator(c, params)
 	return initialize(task, params, actor, err)
+}
+
+// Initialize for BaseTokenTask CmdHandler
+func (task BaseTokenTask) cmdInitialize(args []string) (*ze.Request, Params, *authn.Token, error) {
+	// Decorate the params
+	params := make(Params)
+	params, authToken, err := task.CmdDecorator(args, params)
+	return initializeToken(task, params, authToken, err)
+}
+
+// Initialize for BaseTokenTask WebHandler
+func (task BaseTokenTask) webInitialize(c *gin.Context) (*ze.Request, Params, *authn.Token, error) {
+	// Decorate the params
+	params := make(Params)
+	params, authToken, err := task.WebDecorator(c, params)
+	return initializeToken(task, params, authToken, err)
 }
 
 // Initialize for BaseDataTask CmdHandler

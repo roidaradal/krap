@@ -30,6 +30,12 @@ type BaseTask[A Actor] struct {
 	WebDecorator WebDecorator[A]
 }
 
+type BaseTokenTask struct {
+	ze.Task
+	CmdDecorator CmdTokenDecorator
+	WebDecorator WebTokenDecorator
+}
+
 type BaseDataTask[A Actor] struct {
 	ze.Task
 	CmdDecorator CmdDataDecorator[A]
@@ -45,6 +51,8 @@ type BaseDataTokenTask struct {
 type (
 	CmdDecorator[A Actor]     = func([]string, Params) (Params, *A, error)
 	WebDecorator[A Actor]     = func(*gin.Context, Params) (Params, *A, error)
+	CmdTokenDecorator         = func([]string, Params) (Params, *authn.Token, error)
+	WebTokenDecorator         = func(*gin.Context, Params) (Params, *authn.Token, error)
 	CmdDataDecorator[A Actor] = func([]string, Params) (Params, *A, bool, error)
 	WebDataDecorator[A Actor] = func(*gin.Context, Params) (Params, *A, bool, error)
 	CmdDataTokenDecorator     = func([]string, Params) (Params, *authn.Token, bool, error)

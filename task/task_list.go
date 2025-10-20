@@ -10,12 +10,12 @@ import (
 )
 
 type listConfig[T any, P any] struct {
-	*baseDataConfig[P]
+	*baseTokenConfig[P]
 	outputFn func(P, *ds.List[*T], *ze.Request, error)
 }
 
 type codedListConfig[A Actor, T any, P any] struct {
-	*baseConfig[A, P]
+	*baseActorConfig[A, P]
 	outputFn func(P, *ds.List[*T], *ze.Request, error)
 }
 

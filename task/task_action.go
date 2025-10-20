@@ -9,7 +9,7 @@ import (
 )
 
 type actionConfig[A Actor, P any] struct {
-	*baseConfig[A, P]
+	*baseActorConfig[A, P]
 	outputFn func(P, *ze.Request, error)
 }
 
