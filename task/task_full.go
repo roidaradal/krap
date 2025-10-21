@@ -19,8 +19,15 @@ type FullTask[A Actor, T any] struct {
 	DeferActionCheck bool
 }
 
+type CodedFullTask[A Actor, T any] struct {
+	*BaseTask[A]
+	Fn        TaskFn[A, T]
+	Validator HookFn[A]
+	CodeIndex int
+}
+
 // Create cmd taskConfig
-func cmdTaskConfig[A Actor, T any](task *FullTask[A, T]) *taskConfig[A, T, []string] {
+func cmdTaskConfig[A Actor, T any](task *BaseTask[A]) *taskConfig[A, T, []string] {
 	cfg := &taskConfig[A, T, []string]{}
 	cfg.initialize = task.cmdInitialize
 	cfg.errorFn = cmdDisplayError
@@ -31,7 +38,7 @@ func cmdTaskConfig[A Actor, T any](task *FullTask[A, T]) *taskConfig[A, T, []str
 }
 
 // Create web taskConfig
-func webTaskConfig[A Actor, T any](task *FullTask[A, T]) *taskConfig[A, T, *gin.Context] {
+func webTaskConfig[A Actor, T any](task *BaseTask[A]) *taskConfig[A, T, *gin.Context] {
 	cfg := &taskConfig[A, T, *gin.Context]{}
 	cfg.initialize = task.webInitialize
 	cfg.errorFn = krap.SendDataError
@@ -49,14 +56,24 @@ func NewFullTask[A Actor, T any](action, item string, fn TaskFn[A, T], deferActi
 	return task
 }
 
+// Creates new CodedFullTask
+func NewCodedFullTask[A Actor, T any](action, item string, fn TaskFn[A, T], codeIndex int) *CodedFullTask[A, T] {
+	task := &CodedFullTask[A, T]{}
+	task.Action = action
+	task.Item = item
+	task.Fn = fn
+	task.CodeIndex = codeIndex
+	return task
+}
+
 // FullTask CmdHandler
 func (task FullTask[A, T]) CmdHandler() root.CmdHandler {
-	return fullTaskHandler(&task, cmdTaskConfig(&task))
+	return fullTaskHandler(&task, cmdTaskConfig[A, T](task.BaseTask))
 }
 
 // FullTask WebHandler
 func (task FullTask[A, T]) WebHandler() gin.HandlerFunc {
-	return fullTaskHandler(&task, webTaskConfig(&task))
+	return fullTaskHandler(&task, webTaskConfig[A, T](task.BaseTask))
 }
 
 // Common: create FullTask Handler
@@ -77,6 +94,45 @@ func fullTaskHandler[A Actor, T any, P any](task *FullTask[A, T], cfg *taskConfi
 			// Perform action if authorized
 			item, err = task.Fn(rq, params, actor)
 		}
+		cfg.outputFn(p, item, rq, err)
+	}
+}
+
+// CodedFullTask CmdHandler
+func (task CodedFullTask[A, T]) CmdHandler() root.CmdHandler {
+	codeFn := func(args []string) string {
+		return getCode(args, task.CodeIndex)
+	}
+	return codedFullTaskHandler(&task, cmdTaskConfig[A, T](task.BaseTask), codeFn)
+}
+
+// CodedFullTask WebHandler
+func (task CodedFullTask[A, T]) WebHandler() gin.HandlerFunc {
+	return codedFullTaskHandler(&task, webTaskConfig[A, T](task.BaseTask), krap.WebCodeParam)
+}
+
+// Common: create CodedFullTask Handler
+func codedFullTaskHandler[A Actor, T any, P any](task *CodedFullTask[A, T], cfg *taskConfig[A, T, P], codeFn func(P) string) func(P) {
+	return func(p P) {
+		// Initialize
+		rq, params, actor, err := cfg.initialize(p)
+		if err != nil {
+			cfg.errorFn(p, rq, err)
+			return
+		}
+		if task.Validator == nil {
+			cfg.errorFn(p, rq, errMissingHook)
+			return
+		}
+		// Get code and call validator
+		code := codeFn(p)
+		params, err = task.Validator(rq, params, actor, code)
+		if err != nil {
+			cfg.errorFn(p, rq, err)
+			return
+		}
+		// Perform action
+		item, err := task.Fn(rq, params, actor)
 		cfg.outputFn(p, item, rq, err)
 	}
 }
