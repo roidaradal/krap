@@ -120,6 +120,12 @@ func MainLoop(onExit func()) {
 
 // Check if the command exists and if it meets the min parameter count
 func validateCommandParams(command string, params []string) error {
+	if command == cmdExit || command == cmdHelp {
+		return nil
+	}
+	if command == cmdSearch && len(params) < 1 {
+		return errInvalidParamCount
+	}
 	cfg, ok := cmdMap[command]
 	if !ok {
 		return errInvalidCommand

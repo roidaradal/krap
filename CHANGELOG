@@ -1,3 +1,6 @@
+v0.2.27 - Root Commands 
+    x Commit: 2025-10-21 20:46 
+    x Add cmdHelp, cmdExit, cmdSearch in root.validateCommandParams
 v0.2.26 - Task Config Initialization    
     x Commit: 2025-10-21 19:34
     x Initialized the base Config references in TaskConfigs
