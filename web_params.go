@@ -76,6 +76,27 @@ func WebCodeOption(c *gin.Context) string {
 // Gets the uppercase type option from ?type=option query string,
 // Defaults to ANY_TYPE (*)
 func WebTypeOption(c *gin.Context) string {
-	typ := c.DefaultQuery("type", ANY_TYPE)
-	return strings.ToUpper(typ)
+	option := c.DefaultQuery("type", ANY_TYPE)
+	return strings.ToUpper(option)
+}
+
+// Gets the lowercase add option from ?add=option query string,
+// Defaults to DEFAULT_OPTION (.)
+func WebAddOption(c *gin.Context) string {
+	option := c.DefaultQuery("add", DEFAULT_OPTION)
+	return strings.ToLower(option)
+}
+
+// Gets the lowercase by option from ?by=option query string,
+// Defaults to DEFAULT_OPTION (.)
+func WebByOption(c *gin.Context) string {
+	option := c.DefaultQuery("by", DEFAULT_OPTION)
+	return strings.ToLower(option)
+}
+
+// Gets the lowercase as option from ?as=option query string,
+// Defaults to DEFAULT_OPTION (.)
+func WebAsOption(c *gin.Context) string {
+	option := c.DefaultQuery("as", DEFAULT_OPTION)
+	return strings.ToLower(option)
 }

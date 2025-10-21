@@ -35,7 +35,12 @@ func Cmd[T CmdHandler](command string, minParams int, docs string, task T) *root
 	}
 }
 
-// Create new CmdConfig Router
+// Create gin.HandlerFunc from task.WebHandler()
+func Web[T WebHandler](task T) gin.HandlerFunc {
+	return task.WebHandler()
+}
+
+// Create new CmdConfig from Router
 func CmdRoute[T CmdHandler](command string, minParams int, docs string, router map[string]T) *root.CmdConfig {
 	// Build the handlers of each router option
 	handlerOf := make(map[string]root.CmdHandler)
@@ -59,12 +64,7 @@ func CmdRoute[T CmdHandler](command string, minParams int, docs string, router m
 	}
 }
 
-// Create gin.HandlerFunc from task.WebHandler()
-func Web[T WebHandler](task T) gin.HandlerFunc {
-	return task.WebHandler()
-}
-
-// Create gin.HandlerFunc Router
+// Create gin.HandlerFunc from Router
 func Fork[T WebHandler](router map[string]T, response *krap.ResponseType) gin.HandlerFunc {
 	// Build handlers of each router option
 	handlerOf := make(map[string]gin.HandlerFunc)
@@ -76,6 +76,75 @@ func Fork[T WebHandler](router map[string]T, response *krap.ResponseType) gin.Ha
 		handler, ok := handlerOf[option]
 		if !ok {
 			response.SendErrorFn(c, nil, ErrInvalidOption)
+			return
+		}
+		handler(c)
+	}
+}
+
+// Create new CmdConfig from AddRouter
+func AddRoute[T CmdHandler](command string, minParams int, docs string, router map[[2]string]T) *root.CmdConfig {
+	// Build handlers of each router pair option
+	handlerOf := make(map[[2]string]root.CmdHandler)
+	for pair, handler := range router {
+		handlerOf[pair] = handler.CmdHandler()
+	}
+	routerHandler := func(args []string) {
+		option1 := strings.ToLower(args[0])
+		option2 := strings.ToLower(args[1])
+		key := [2]string{option1, option2}
+		handler, ok := handlerOf[key]
+		if !ok {
+			krap.DisplayError(ErrInvalidOption)
+			return
+		}
+		handler(args)
+	}
+	return &root.CmdConfig{
+		Command:   command,
+		MinParams: minParams,
+		Docs:      docs,
+		Handler:   routerHandler,
+	}
+}
+
+// Create gin.HandlerFunc from AddRouter,
+// [option1, option2] = Option1 is from :Fork, Option2 is from ?add query option
+func AddFork[T WebHandler](router map[[2]string]T, response *krap.ResponseType) gin.HandlerFunc {
+	// Build handlers of each router pair option
+	handlerOf := make(map[[2]string]gin.HandlerFunc)
+	for pair, handler := range router {
+		handlerOf[pair] = handler.WebHandler()
+	}
+	return func(c *gin.Context) {
+		option1 := krap.WebForkParam(c)
+		option2 := krap.WebAddOption(c)
+		key := [2]string{option1, option2}
+		handler, ok := handlerOf[key]
+		if !ok {
+			response.SendErrorFn(c, nil, ErrInvalidOption)
+			return
+		}
+		handler(c)
+	}
+}
+
+// Fork the web router using the given option fn,
+// Expects data response
+func OptionFork[T WebHandler](router map[string]T, optionFn func(*gin.Context) string) gin.HandlerFunc {
+	// Build handlers of each route option
+	handlerOf := make(map[string]gin.HandlerFunc)
+	for key, handler := range router {
+		handlerOf[key] = handler.WebHandler()
+	}
+	return func(c *gin.Context) {
+		option := optionFn(c)
+		handler, ok := handlerOf[option]
+		if !ok {
+			handler, ok = handlerOf[krap.DEFAULT_OPTION]
+		}
+		if !ok {
+			krap.SendDataError(c, nil, ErrInvalidOption)
 			return
 		}
 		handler(c)

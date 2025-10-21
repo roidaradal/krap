@@ -83,7 +83,7 @@ func NewTypedActionTask[A Actor, T any](action, item string, fn ActionFn[A], cod
 	return task
 }
 
-// Attach HookFn to CodedActonTask
+// Attach HookFn to CodedActionTask
 func (task *CodedActionTask[A]) WithValidator(hookFn HookFn[A]) {
 	task.Validator = hookFn
 }

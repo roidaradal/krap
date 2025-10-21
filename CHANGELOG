@@ -1,3 +1,7 @@
+v0.2.23 - AddRouter 
+    x Commit: 2025-10-21 10:34
+    x CodedFullTask.WithValidator
+    x AddRoute, AddFork, OptionFork
 v0.2.22 - CodedFullTask 
     x Commit: 2025-10-21 09:57
     x CodedFullTask, NewCodedFullTask

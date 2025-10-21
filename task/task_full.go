@@ -66,6 +66,11 @@ func NewCodedFullTask[A Actor, T any](action, item string, fn TaskFn[A, T], code
 	return task
 }
 
+// Attach HookFn to CodedFullTask
+func (task *CodedFullTask[A, T]) WithValidator(hookFn HookFn[A]) {
+	task.Validator = hookFn
+}
+
 // FullTask CmdHandler
 func (task FullTask[A, T]) CmdHandler() root.CmdHandler {
 	return fullTaskHandler(&task, cmdTaskConfig[A, T](task.BaseTask))
