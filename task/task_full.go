@@ -28,7 +28,9 @@ type CodedFullTask[A Actor, T any] struct {
 
 // Create cmd taskConfig
 func cmdTaskConfig[A Actor, T any](task *BaseTask[A]) *taskConfig[A, T, []string] {
-	cfg := &taskConfig[A, T, []string]{}
+	cfg := &taskConfig[A, T, []string]{
+		baseActorConfig: &baseActorConfig[A, []string]{},
+	}
 	cfg.initialize = task.cmdInitialize
 	cfg.errorFn = cmdDisplayError
 	cfg.outputFn = func(args []string, item *T, rq *ze.Request, err error) {
@@ -39,7 +41,9 @@ func cmdTaskConfig[A Actor, T any](task *BaseTask[A]) *taskConfig[A, T, []string
 
 // Create web taskConfig
 func webTaskConfig[A Actor, T any](task *BaseTask[A]) *taskConfig[A, T, *gin.Context] {
-	cfg := &taskConfig[A, T, *gin.Context]{}
+	cfg := &taskConfig[A, T, *gin.Context]{
+		baseActorConfig: &baseActorConfig[A, *gin.Context]{},
+	}
 	cfg.initialize = task.webInitialize
 	cfg.errorFn = krap.SendDataError
 	cfg.outputFn = krap.SendDataResponse

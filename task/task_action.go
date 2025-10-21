@@ -34,7 +34,9 @@ type TypedActionTask[A Actor, T any] struct {
 
 // Create cmd actionConfig
 func cmdActionConfig[A Actor](task *BaseTask[A]) *actionConfig[A, []string] {
-	cfg := &actionConfig[A, []string]{}
+	cfg := &actionConfig[A, []string]{
+		baseActorConfig: &baseActorConfig[A, []string]{},
+	}
 	cfg.initialize = task.cmdInitialize
 	cfg.errorFn = cmdDisplayError
 	cfg.outputFn = func(args []string, rq *ze.Request, err error) {
@@ -45,7 +47,9 @@ func cmdActionConfig[A Actor](task *BaseTask[A]) *actionConfig[A, []string] {
 
 // Create web actionConfig
 func webActionConfig[A Actor](task *BaseTask[A]) *actionConfig[A, *gin.Context] {
-	cfg := &actionConfig[A, *gin.Context]{}
+	cfg := &actionConfig[A, *gin.Context]{
+		baseActorConfig: &baseActorConfig[A, *gin.Context]{},
+	}
 	cfg.initialize = task.webInitialize
 	cfg.errorFn = krap.SendActionError
 	cfg.outputFn = krap.SendActionResponse

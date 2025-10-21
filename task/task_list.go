@@ -59,7 +59,9 @@ func (task *CodedListTask[A, T]) WithValidator(hookFn HookFn[A]) {
 
 // ListTask CmdHandler
 func (task ListTask[T]) CmdHandler() root.CmdHandler {
-	cfg := &listConfig[T, []string]{}
+	cfg := &listConfig[T, []string]{
+		baseTokenConfig: &baseTokenConfig[[]string]{},
+	}
 	cfg.initialize = task.cmdInitialize
 	cfg.errorFn = cmdDisplayError
 	cfg.outputFn = func(args []string, list *ds.List[*T], rq *ze.Request, err error) {
@@ -70,7 +72,9 @@ func (task ListTask[T]) CmdHandler() root.CmdHandler {
 
 // ListTask WebHandler
 func (task ListTask[T]) WebHandler() gin.HandlerFunc {
-	cfg := &listConfig[T, *gin.Context]{}
+	cfg := &listConfig[T, *gin.Context]{
+		baseTokenConfig: &baseTokenConfig[*gin.Context]{},
+	}
 	cfg.initialize = task.webInitialize
 	cfg.errorFn = krap.SendDataError
 	cfg.outputFn = krap.SendDataResponse
@@ -99,7 +103,9 @@ func listTaskHandler[T any, P any](task *ListTask[T], cfg *listConfig[T, P]) fun
 
 // CodedListTask CmdHandler
 func (task CodedListTask[A, T]) CmdHandler() root.CmdHandler {
-	cfg := &codedListConfig[A, T, []string]{}
+	cfg := &codedListConfig[A, T, []string]{
+		baseActorConfig: &baseActorConfig[A, []string]{},
+	}
 	cfg.initialize = task.cmdInitialize
 	cfg.errorFn = cmdDisplayError
 	cfg.outputFn = func(args []string, list *ds.List[*T], rq *ze.Request, err error) {
@@ -113,7 +119,9 @@ func (task CodedListTask[A, T]) CmdHandler() root.CmdHandler {
 
 // CodedListTask WebHandler
 func (task CodedListTask[A, T]) WebHandler() gin.HandlerFunc {
-	cfg := &codedListConfig[A, T, *gin.Context]{}
+	cfg := &codedListConfig[A, T, *gin.Context]{
+		baseActorConfig: &baseActorConfig[A, *gin.Context]{},
+	}
 	cfg.initialize = task.webInitialize
 	cfg.errorFn = krap.SendDataError
 	cfg.outputFn = krap.SendDataResponse

@@ -60,7 +60,9 @@ func (task *CodedViewTask[A, T]) WithValidator(hookFn HookFn[A]) {
 
 // ViewTask CmdHandler
 func (task ViewTask[T]) CmdHandler() root.CmdHandler {
-	cfg := &viewConfig[T, []string]{}
+	cfg := &viewConfig[T, []string]{
+		baseTokenConfig: &baseTokenConfig[[]string]{},
+	}
 	cfg.initialize = task.cmdInitialize
 	cfg.errorFn = cmdDisplayError
 	cfg.outputFn = func(args []string, item *T, rq *ze.Request, err error) {
@@ -71,7 +73,9 @@ func (task ViewTask[T]) CmdHandler() root.CmdHandler {
 
 // ViewTask WebHandler
 func (task ViewTask[T]) WebHandler() gin.HandlerFunc {
-	cfg := &viewConfig[T, *gin.Context]{}
+	cfg := &viewConfig[T, *gin.Context]{
+		baseTokenConfig: &baseTokenConfig[*gin.Context]{},
+	}
 	cfg.initialize = task.webInitialize
 	cfg.errorFn = krap.SendDataError
 	cfg.outputFn = krap.SendDataResponse
@@ -100,7 +104,9 @@ func viewTaskHandler[T any, P any](task *ViewTask[T], cfg *viewConfig[T, P]) fun
 
 // CodedViewTask CmdHandler
 func (task CodedViewTask[A, T]) CmdHandler() root.CmdHandler {
-	cfg := &codedViewConfig[A, T, []string]{}
+	cfg := &codedViewConfig[A, T, []string]{
+		baseActorConfig: &baseActorConfig[A, []string]{},
+	}
 	cfg.initialize = task.cmdInitialize
 	cfg.errorFn = cmdDisplayError
 	cfg.outputFn = func(args []string, item *T, rq *ze.Request, err error) {
@@ -114,7 +120,9 @@ func (task CodedViewTask[A, T]) CmdHandler() root.CmdHandler {
 
 // CodedViewTask WebHandler
 func (task CodedViewTask[A, T]) WebHandler() gin.HandlerFunc {
-	cfg := &codedViewConfig[A, T, *gin.Context]{}
+	cfg := &codedViewConfig[A, T, *gin.Context]{
+		baseActorConfig: &baseActorConfig[A, *gin.Context]{},
+	}
 	cfg.initialize = task.webInitialize
 	cfg.errorFn = krap.SendDataError
 	cfg.outputFn = krap.SendDataResponse

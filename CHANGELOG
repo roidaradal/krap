@@ -1,3 +1,6 @@
+v0.2.26 - Task Config Initialization    
+    x Commit: 2025-10-21 19:34
+    x Initialized the base Config references in TaskConfigs
 v0.2.25 - Task Initialization 
     x Commit: 2025-10-21 19:24
     x Initialized the parent Task references in NewTask functions
