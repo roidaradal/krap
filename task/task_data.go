@@ -112,7 +112,7 @@ func (task CodedDataTask[A, T]) WebHandler() gin.HandlerFunc {
 	cfg.initialize = task.webInitialize
 	cfg.errorFn = krap.SendDataError
 	cfg.outputFn = krap.SendDataResponse
-	return codedDataTaskHandler(&task, cfg, krap.WebCodeParam)
+	return codedDataTaskHandler(&task, cfg, krap.WebCodeOption)
 }
 
 // Common: create CodedListTask Handler

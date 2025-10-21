@@ -77,7 +77,7 @@ func GetActiveFeatures() []string {
 
 // Get all active {scope => []features} at table
 func GetAllScopedFeatures(table string) dict.StringListMap {
-	if !dict.HasKey(scopedFeatures, table) {
+	if dict.NoKey(scopedFeatures, table) {
 		return dict.StringListMap{}
 	}
 	return scopedFeatures[table]
@@ -101,7 +101,7 @@ func GetAllFeatureScopes(table string) dict.StringListMap {
 // Get all active scoped features at table for given scopeCodes
 func GetScopedFeatures(table string, scopeCodes ...string) dict.StringListMap {
 	scopeFeatures := make(dict.StringListMap)
-	if !dict.HasKey(scopedFeatures, table) {
+	if dict.NoKey(scopedFeatures, table) {
 		return scopeFeatures
 	}
 	for _, scope := range scopeCodes {
@@ -133,7 +133,7 @@ func CheckFeature(rq *ze.Request, feature string) error {
 
 // Check if scoped feature at table is available
 func CheckScopedFeature(rq *ze.Request, table, scopeCode, feature string) error {
-	if !dict.HasKey(scopedFeatures, table) {
+	if dict.NoKey(scopedFeatures, table) {
 		rq.Status = ze.Err403
 		return errUnavailableFeature
 	}

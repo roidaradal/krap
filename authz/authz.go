@@ -91,7 +91,7 @@ func LoadScopedAccess(rq *ze.Request, table string) error {
 
 	for _, axs := range access {
 		scope := axs.ScopeCode
-		if !dict.HasKey(scopedAccess[table], scope) {
+		if dict.NoKey(scopedAccess[table], scope) {
 			scopedAccess[table][scope] = make(dict.StringListMap)
 		}
 		for _, action := range actionsList {
@@ -141,10 +141,10 @@ func GetAllRoleAccess() dict.StringListMap {
 // Get scoped access
 func GetScopedAccess(table string, scopeCode string) dict.StringListMap {
 	scopeAccess := make(dict.StringListMap)
-	if !dict.HasKey(scopedAccess, table) {
+	if dict.NoKey(scopedAccess, table) {
 		return scopeAccess
 	}
-	if !dict.HasKey(scopedAccess[table], scopeCode) {
+	if dict.NoKey(scopedAccess[table], scopeCode) {
 		return scopeAccess
 	}
 	return scopedAccess[table][scopeCode]
@@ -164,12 +164,12 @@ func CheckActionAllowedFor(rq *ze.Request, role string) error {
 
 // Check if role is allowed to do scoped action on item
 func CheckScopedActionAllowedFor(rq *ze.Request, table, scopeCode, role string) error {
-	if !dict.HasKey(scopedAccess, table) {
+	if dict.NoKey(scopedAccess, table) {
 		rq.Status = ze.Err403
 		return ErrUnauthorizedAccess
 	}
 	scopeCode = strings.ToUpper(scopeCode)
-	if !dict.HasKey(scopedAccess[table], scopeCode) {
+	if dict.NoKey(scopedAccess[table], scopeCode) {
 		rq.Status = ze.Err403
 		return ErrUnauthorizedAccess
 	}

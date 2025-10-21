@@ -1,3 +1,7 @@
+v0.2.24 - CodedData WebCodeOption
+    x Commit: 2025-10-21 16:47
+    x task.OptionFork takes krap.ResponseType in params
+    x Changed codeFn of CodedDataTask, CodedListTask to WebCodeOption
 v0.2.23 - AddRouter 
     x Commit: 2025-10-21 10:34
     x CodedFullTask.WithValidator

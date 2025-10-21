@@ -129,9 +129,8 @@ func AddFork[T WebHandler](router map[[2]string]T, response *krap.ResponseType) 
 	}
 }
 
-// Fork the web router using the given option fn,
-// Expects data response
-func OptionFork[T WebHandler](router map[string]T, optionFn func(*gin.Context) string) gin.HandlerFunc {
+// Fork the web router using the given option fn
+func OptionFork[T WebHandler](router map[string]T, response *krap.ResponseType, optionFn func(*gin.Context) string) gin.HandlerFunc {
 	// Build handlers of each route option
 	handlerOf := make(map[string]gin.HandlerFunc)
 	for key, handler := range router {
@@ -144,7 +143,7 @@ func OptionFork[T WebHandler](router map[string]T, optionFn func(*gin.Context) s
 			handler, ok = handlerOf[krap.DEFAULT_OPTION]
 		}
 		if !ok {
-			krap.SendDataError(c, nil, ErrInvalidOption)
+			response.SendErrorFn(c, nil, ErrInvalidOption)
 			return
 		}
 		handler(c)
