@@ -32,7 +32,9 @@ type CodedDataTask[A Actor, T any] struct {
 
 // Creates new DataTask
 func NewDataTask[T any](item string, fn DataFn[T]) *DataTask[T] {
-	task := &DataTask[T]{}
+	task := &DataTask[T]{
+		BaseDataTokenTask: &BaseDataTokenTask{},
+	}
 	task.Item = item
 	task.Fn = fn
 	return task
@@ -40,7 +42,9 @@ func NewDataTask[T any](item string, fn DataFn[T]) *DataTask[T] {
 
 // Creates new CodedDataTask
 func NewCodedDataTask[A Actor, T any](item string, fn DataFn[T], codeIndex int) *CodedDataTask[A, T] {
-	task := &CodedDataTask[A, T]{}
+	task := &CodedDataTask[A, T]{
+		BaseDataTask: &BaseDataTask[A]{},
+	}
 	task.Item = item
 	task.Fn = fn
 	task.CodeIndex = codeIndex

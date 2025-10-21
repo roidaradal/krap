@@ -1,3 +1,6 @@
+v0.2.25 - Task Initialization 
+    x Commit: 2025-10-21 19:24
+    x Initialized the parent Task references in NewTask functions
 v0.2.24 - CodedData WebCodeOption
     x Commit: 2025-10-21 16:47
     x task.OptionFork takes krap.ResponseType in params

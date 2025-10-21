@@ -54,7 +54,9 @@ func webActionConfig[A Actor](task *BaseTask[A]) *actionConfig[A, *gin.Context] 
 
 // Creates new ActionTask
 func NewActionTask[A Actor](action, item string, fn ActionFn[A]) *ActionTask[A] {
-	task := &ActionTask[A]{}
+	task := &ActionTask[A]{
+		BaseTask: &BaseTask[A]{},
+	}
 	task.Action = action
 	task.Item = item
 	task.Fn = fn
@@ -63,20 +65,18 @@ func NewActionTask[A Actor](action, item string, fn ActionFn[A]) *ActionTask[A] 
 
 // Creates new CodedActionTask
 func NewCodedActionTask[A Actor](action, item string, fn ActionFn[A], codeIndex int) *CodedActionTask[A] {
-	task := &CodedActionTask[A]{}
-	task.Action = action
-	task.Item = item
-	task.Fn = fn
+	task := &CodedActionTask[A]{
+		ActionTask: NewActionTask(action, item, fn),
+	}
 	task.CodeIndex = codeIndex
 	return task
 }
 
 // Creates new TypedActionTask
 func NewTypedActionTask[A Actor, T any](action, item string, fn ActionFn[A], codeIndex int, schema *ze.Schema[T], store Store[T]) *TypedActionTask[A, T] {
-	task := &TypedActionTask[A, T]{}
-	task.Action = action
-	task.Item = item
-	task.Fn = fn
+	task := &TypedActionTask[A, T]{
+		ActionTask: NewActionTask(action, item, fn),
+	}
 	task.CodeIndex = codeIndex
 	task.Schema = schema
 	task.Store = store

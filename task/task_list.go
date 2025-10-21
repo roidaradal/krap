@@ -33,7 +33,9 @@ type CodedListTask[A Actor, T any] struct {
 
 // Creates new ListTask
 func NewListTask[T any](item string, fn ListFn[T]) *ListTask[T] {
-	task := &ListTask[T]{}
+	task := &ListTask[T]{
+		BaseDataTokenTask: &BaseDataTokenTask{},
+	}
 	task.Item = item
 	task.Fn = fn
 	return task
@@ -41,7 +43,9 @@ func NewListTask[T any](item string, fn ListFn[T]) *ListTask[T] {
 
 // Creates new CodedListTask
 func NewCodedListTask[A Actor, T any](item string, fn ListFn[T], codeIndex int) *CodedListTask[A, T] {
-	task := &CodedListTask[A, T]{}
+	task := &CodedListTask[A, T]{
+		BaseDataTask: &BaseDataTask[A]{},
+	}
 	task.Item = item
 	task.Fn = fn
 	task.CodeIndex = codeIndex

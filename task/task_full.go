@@ -48,7 +48,9 @@ func webTaskConfig[A Actor, T any](task *BaseTask[A]) *taskConfig[A, T, *gin.Con
 
 // Creates new FullTask
 func NewFullTask[A Actor, T any](action, item string, fn TaskFn[A, T], deferActionCheck bool) *FullTask[A, T] {
-	task := &FullTask[A, T]{}
+	task := &FullTask[A, T]{
+		BaseTask: &BaseTask[A]{},
+	}
 	task.Action = action
 	task.Item = item
 	task.Fn = fn
@@ -58,7 +60,9 @@ func NewFullTask[A Actor, T any](action, item string, fn TaskFn[A, T], deferActi
 
 // Creates new CodedFullTask
 func NewCodedFullTask[A Actor, T any](action, item string, fn TaskFn[A, T], codeIndex int) *CodedFullTask[A, T] {
-	task := &CodedFullTask[A, T]{}
+	task := &CodedFullTask[A, T]{
+		BaseTask: &BaseTask[A]{},
+	}
 	task.Action = action
 	task.Item = item
 	task.Fn = fn

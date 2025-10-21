@@ -32,7 +32,9 @@ type CodedViewTask[A Actor, T any] struct {
 
 // Creates new ViewTask
 func NewViewTask[T any](item string, fn DataFn[T]) *ViewTask[T] {
-	task := &ViewTask[T]{}
+	task := &ViewTask[T]{
+		BaseTokenTask: &BaseTokenTask{},
+	}
 	task.Action = authz.VIEW
 	task.Item = item
 	task.Fn = fn
@@ -41,7 +43,9 @@ func NewViewTask[T any](item string, fn DataFn[T]) *ViewTask[T] {
 
 // Creates new CodedViewTask
 func NewCodedViewTask[A Actor, T any](item string, fn DataFn[T], codeIndex int) *CodedViewTask[A, T] {
-	task := &CodedViewTask[A, T]{}
+	task := &CodedViewTask[A, T]{
+		BaseTask: &BaseTask[A]{},
+	}
 	task.Action = authz.VIEW
 	task.Item = item
 	task.Fn = fn
