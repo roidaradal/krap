@@ -48,14 +48,11 @@ Audit Logs
 
 * audit.Initialize( ) error
 * audit.NewDetails(...string) string 
-* audit.NewActionLog(actorID, action, details string) *ActionLog
-* audit.NewActionLogs(actorID, [][2]string) []*ActionLog 
-* audit.AddActionLogTx(*ze.Request, *ActionLog, table string) error 
-* audit.AddActionLogsTx(*ze.Request, []*ActionLog, table string) error
-* audit.NewBatchLog(action, details, actionGlue string) *BatchLog 
-* audit.NewBatchLogItems(batchCode string, detailsList []string) []*BatchLogItem
-* audit.AddBatchLogTx(*ze.Request, *BatchLog) error 
-* audit.AddBatchLogItemsTx(*ze.Request, []*BatchLogItem) error
+* audit.NewUpdateActionDetails(action, itemCode string, rdb.FieldUpdates) [][2]string
+* audit.AddActionLogTx(*ze.Request, actorID ID, action, details, table string) error 
+* audit.AddActionLogsTx(*ze.Request, actorID ID, actionDetails [][2]string, table string) error
+* audit.AddBatchLogTx(*ze.Request, action, details, actionGlue string) error 
+* audit.AddBatchLogItemsTx(*ze.Request, batchCode string, detailsList []string) error
 
 ## authn
 Authentication

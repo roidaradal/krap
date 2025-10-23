@@ -45,7 +45,7 @@ func NewUpdateActionDetails(action, itemCode string, updates rdb.FieldUpdates) [
 }
 
 // Creates new ActionLog
-func NewActionLog(actorID ze.ID, action, details string) *ActionLog {
+func newActionLog(actorID ze.ID, action, details string) *ActionLog {
 	actionLog := &ActionLog{}
 	actionLog.CreatedAt = clock.DateTimeNow()
 	actionLog.ActorID = actorID
@@ -55,35 +55,37 @@ func NewActionLog(actorID ze.ID, action, details string) *ActionLog {
 }
 
 // Creates list of new ActionLogs
-func NewActionLogs(actorID ze.ID, actionDetails [][2]string) []*ActionLog {
+func newActionLogs(actorID ze.ID, actionDetails [][2]string) []*ActionLog {
 	actionLogs := make([]*ActionLog, len(actionDetails))
 	for i, pair := range actionDetails {
 		action, details := pair[0], pair[1]
-		actionLogs[i] = NewActionLog(actorID, action, details)
+		actionLogs[i] = newActionLog(actorID, action, details)
 	}
 	return actionLogs
 }
 
 // Inserts ActionLog using transaction at given table
-func AddActionLogTx(rqtx *ze.Request, actionLog *ActionLog, table string) error {
+func AddActionLogTx(rqtx *ze.Request, actorID ze.ID, action, details, table string) error {
 	if ActionLogs == nil {
 		rqtx.Status = ze.Err500
 		return ze.ErrMissingSchema
 	}
+	actionLog := newActionLog(actorID, action, details)
 	return ActionLogs.InsertTxAt(rqtx, actionLog, table)
 }
 
 // Inserts ActionLog rows using transaction at given table
-func AddActionLogsTx(rqtx *ze.Request, actionLogs []*ActionLog, table string) error {
+func AddActionLogsTx(rqtx *ze.Request, actorID ze.ID, actionDetails [][2]string, table string) error {
 	if ActionLogs == nil {
 		rqtx.Status = ze.Err500
 		return ze.ErrMissingSchema
 	}
+	actionLogs := newActionLogs(actorID, actionDetails)
 	return ActionLogs.InsertTxRowsAt(rqtx, actionLogs, table)
 }
 
 // Creates new BatchLog
-func NewBatchLog(action, details, actionGlue string) *BatchLog {
+func newBatchLog(action, details, actionGlue string) *BatchLog {
 	now := clock.TimeNow()
 	batchLog := &BatchLog{}
 	batchLog.CreatedAt = clock.StandardFormat(now)
@@ -94,7 +96,7 @@ func NewBatchLog(action, details, actionGlue string) *BatchLog {
 }
 
 // Creates rows of new BatchLog items
-func NewBatchLogItems(batchCode string, detailsList []string) []*BatchLogItem {
+func newBatchLogItems(batchCode string, detailsList []string) []*BatchLogItem {
 	batchItems := make([]*BatchLogItem, len(detailsList))
 	for i, details := range detailsList {
 		batchItem := &BatchLogItem{}
@@ -106,19 +108,21 @@ func NewBatchLogItems(batchCode string, detailsList []string) []*BatchLogItem {
 }
 
 // Inserts BatchLog using transaction
-func AddBatchLogTx(rqtx *ze.Request, batchLog *BatchLog) error {
+func AddBatchLogTx(rqtx *ze.Request, action, details, actionGlue string) error {
 	if BatchLogs == nil {
 		rqtx.Status = ze.Err500
 		return ze.ErrMissingSchema
 	}
+	batchLog := newBatchLog(action, details, actionGlue)
 	return BatchLogs.InsertTx(rqtx, batchLog)
 }
 
 // Inserts BatchLogItems using transaction
-func AddBatchLogItemsTx(rqtx *ze.Request, batchItems []*BatchLogItem) error {
+func AddBatchLogItemsTx(rqtx *ze.Request, batchCode string, detailsList []string) error {
 	if BatchLogItems == nil {
 		rqtx.Status = ze.Err500
 		return ze.ErrMissingSchema
 	}
+	batchItems := newBatchLogItems(batchCode, detailsList)
 	return BatchLogItems.InsertTxRows(rqtx, batchItems)
 }
