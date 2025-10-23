@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/roidaradal/fn"
 	"github.com/roidaradal/fn/dict"
 	"github.com/roidaradal/fn/ds"
 	"github.com/roidaradal/fn/str"
@@ -123,8 +124,8 @@ func validateCommandParams(command string, params []string) error {
 	if command == cmdExit || command == cmdHelp {
 		return nil
 	}
-	if command == cmdSearch && len(params) < 1 {
-		return errInvalidParamCount
+	if command == cmdSearch {
+		return fn.Ternary(len(params) < 1, errInvalidParamCount, nil)
 	}
 	cfg, ok := cmdMap[command]
 	if !ok {

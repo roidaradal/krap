@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/gin-gonic/gin v1.11.0
 	github.com/roidaradal/fn v0.4.16
-	github.com/roidaradal/rdb v0.13.16
+	github.com/roidaradal/rdb v0.13.18
 	golang.org/x/term v0.36.0
 )
 

@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/roidaradal/fn"
 	"github.com/roidaradal/fn/clock"
+	"github.com/roidaradal/fn/dict"
 	"github.com/roidaradal/fn/str"
 	"github.com/roidaradal/krap"
+	"github.com/roidaradal/rdb"
 	"github.com/roidaradal/rdb/ze"
 )
 
@@ -30,6 +33,15 @@ func Initialize() error {
 // Creates new details string from items separated by |
 func NewDetails(items ...string) string {
 	return strings.Join(items, detailsGlue)
+}
+
+// Creates new action details list
+func NewUpdateActionDetails(action, itemCode string, updates rdb.FieldUpdates) [][2]string {
+	return fn.Map(dict.SortedEntries(updates), func(entry dict.Entry[string, rdb.FieldUpdate]) [2]string {
+		oldValue, newValue := entry.Value.Tuple()
+		details := NewDetails(itemCode, entry.Key, str.Any(oldValue), str.Any(newValue))
+		return [2]string{action, details}
+	})
 }
 
 // Creates new ActionLog
