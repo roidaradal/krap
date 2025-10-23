@@ -84,7 +84,7 @@ func (task DataTask[T]) WebHandler() gin.HandlerFunc {
 func dataTaskHandler[T any, P any](task *DataTask[T], cfg *dataConfig[T, P]) func(P) {
 	return func(p P) {
 		// Initialize
-		rq, params, authToken, err := cfg.initialize(p)
+		rq, authToken, err := cfg.initialize(p)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
@@ -94,7 +94,7 @@ func dataTaskHandler[T any, P any](task *DataTask[T], cfg *dataConfig[T, P]) fun
 		var data *T
 		if err == nil {
 			// Get data if authorized
-			data, err = task.Fn(rq, params)
+			data, err = task.Fn(rq)
 		}
 		cfg.outputFn(p, data, rq, err)
 	}
@@ -131,7 +131,7 @@ func (task CodedDataTask[A, T]) WebHandler() gin.HandlerFunc {
 func codedDataTaskHandler[A Actor, T any, P any](task *CodedDataTask[A, T], cfg *codedDataConfig[A, T, P], codeFn func(P) string) func(P) {
 	return func(p P) {
 		// Initialize
-		rq, params, actor, err := cfg.initialize(p)
+		rq, actor, err := cfg.initialize(p)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
@@ -142,13 +142,13 @@ func codedDataTaskHandler[A Actor, T any, P any](task *CodedDataTask[A, T], cfg 
 		}
 		// Get code and call validator
 		code := codeFn(p)
-		params, err = task.Validator(rq, params, actor, code)
+		err = task.Validator(rq, actor, code)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
 		}
 		// Get data after passing all checks
-		data, err := task.Fn(rq, params)
+		data, err := task.Fn(rq)
 		cfg.outputFn(p, data, rq, err)
 	}
 }

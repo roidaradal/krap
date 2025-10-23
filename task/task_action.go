@@ -111,7 +111,7 @@ func (task ActionTask[A]) WebHandler() gin.HandlerFunc {
 func actionTaskHandler[A Actor, P any](task *ActionTask[A], cfg *actionConfig[A, P]) func(P) {
 	return func(p P) {
 		// Initialize
-		rq, params, actor, err := cfg.initialize(p)
+		rq, actor, err := cfg.initialize(p)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
@@ -120,7 +120,7 @@ func actionTaskHandler[A Actor, P any](task *ActionTask[A], cfg *actionConfig[A,
 		err = authz.CheckActionAllowedFor(rq, (*actor).GetRole())
 		if err == nil {
 			// Perform action if authorized
-			err = task.Fn(rq, params, actor)
+			err = task.Fn(rq, actor)
 		}
 		cfg.outputFn(p, rq, err)
 	}
@@ -143,7 +143,7 @@ func (task CodedActionTask[A]) WebHandler() gin.HandlerFunc {
 func codedActionTaskHandler[A Actor, P any](task *CodedActionTask[A], cfg *actionConfig[A, P], codeFn func(P) string) func(P) {
 	return func(p P) {
 		// Initialize
-		rq, params, actor, err := cfg.initialize(p)
+		rq, actor, err := cfg.initialize(p)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
@@ -154,13 +154,13 @@ func codedActionTaskHandler[A Actor, P any](task *CodedActionTask[A], cfg *actio
 		}
 		// Get code and call validator
 		code := codeFn(p)
-		params, err = task.Validator(rq, params, actor, code)
+		err = task.Validator(rq, actor, code)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
 		}
 		// Perform action
-		err = task.Fn(rq, params, actor)
+		err = task.Fn(rq, actor)
 		cfg.outputFn(p, rq, err)
 	}
 }
@@ -182,7 +182,7 @@ func (task TypedActionTask[A, T]) WebHandler() gin.HandlerFunc {
 func typedActionTaskHandler[A Actor, T any, P any](task *TypedActionTask[A, T], cfg *actionConfig[A, P], codeFn func(P) string) func(P) {
 	return func(p P) {
 		// Initialize
-		rq, params, actor, err := cfg.initialize(p)
+		rq, actor, err := cfg.initialize(p)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
@@ -193,13 +193,13 @@ func typedActionTaskHandler[A Actor, T any, P any](task *TypedActionTask[A, T], 
 		}
 		// Get code and call validator
 		code := codeFn(p)
-		params, err = task.Validator(rq, params, actor, task.Schema, task.Store, code)
+		err = task.Validator(rq, actor, task.Schema, task.Store, code)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
 		}
 		// Perform action
-		err = task.Fn(rq, params, actor)
+		err = task.Fn(rq, actor)
 		cfg.outputFn(p, rq, err)
 	}
 }

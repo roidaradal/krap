@@ -11,12 +11,12 @@ import (
 )
 
 type baseActorConfig[A Actor, P any] struct {
-	initialize func(P) (*ze.Request, Params, *A, error)
+	initialize func(P) (*ze.Request, *A, error)
 	errorFn    func(P, *ze.Request, error)
 }
 
 type baseTokenConfig[P any] struct {
-	initialize func(P) (*ze.Request, Params, *authn.Token, error)
+	initialize func(P) (*ze.Request, *authn.Token, error)
 	errorFn    func(P, *ze.Request, error)
 }
 

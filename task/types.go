@@ -2,7 +2,6 @@ package task
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/roidaradal/fn/dict"
 	"github.com/roidaradal/fn/ds"
 	"github.com/roidaradal/krap/authn"
 	"github.com/roidaradal/krap/root"
@@ -11,17 +10,15 @@ import (
 
 // Note: A type is for Actor
 
-type Params = dict.Object
-
 type Actor interface {
 	GetRole() string
 }
 
 type (
-	TaskFn[A Actor, T any] = func(*ze.Request, Params, *A) (*T, error)
-	ActionFn[A Actor]      = func(*ze.Request, Params, *A) error
-	DataFn[T any]          = func(*ze.Request, Params) (*T, error)
-	ListFn[T any]          = func(*ze.Request, Params) (*ds.List[*T], error)
+	TaskFn[A Actor, T any] = func(*ze.Request, *A) (*T, error)
+	ActionFn[A Actor]      = func(*ze.Request, *A) error
+	DataFn[T any]          = func(*ze.Request) (*T, error)
+	ListFn[T any]          = func(*ze.Request) (*ds.List[*T], error)
 )
 
 type BaseTask[A Actor] struct {
@@ -49,14 +46,21 @@ type BaseDataTokenTask struct {
 }
 
 type (
-	CmdDecorator[A Actor]     = func([]string, Params) (Params, *A, error)
-	WebDecorator[A Actor]     = func(*gin.Context, Params) (Params, *A, error)
-	CmdTokenDecorator         = func([]string, Params) (Params, *authn.Token, error)
-	WebTokenDecorator         = func(*gin.Context, Params) (Params, *authn.Token, error)
-	CmdDataDecorator[A Actor] = func([]string, Params) (Params, *A, bool, error)
-	WebDataDecorator[A Actor] = func(*gin.Context, Params) (Params, *A, bool, error)
-	CmdDataTokenDecorator     = func([]string, Params) (Params, *authn.Token, bool, error)
-	WebDataTokenDecorator     = func(*gin.Context, Params) (Params, *authn.Token, bool, error)
+	Decorator[A Actor, P any] = func(*ze.Request, P) (*A, error)
+	CmdDecorator[A Actor]     = func(*ze.Request, []string) (*A, error)
+	WebDecorator[A Actor]     = func(*ze.Request, *gin.Context) (*A, error)
+
+	TokenDecorator[P any] = func(*ze.Request, P) (*authn.Token, error)
+	CmdTokenDecorator     = func(*ze.Request, []string) (*authn.Token, error)
+	WebTokenDecorator     = func(*ze.Request, *gin.Context) (*authn.Token, error)
+
+	DataDecorator[A Actor, P any] = func(*ze.Request, P) (*A, bool, error)
+	CmdDataDecorator[A Actor]     = func(*ze.Request, []string) (*A, bool, error)
+	WebDataDecorator[A Actor]     = func(*ze.Request, *gin.Context) (*A, bool, error)
+
+	DataTokenDecorator[P any] = func(*ze.Request, P) (*authn.Token, bool, error)
+	CmdDataTokenDecorator     = func(*ze.Request, []string) (*authn.Token, bool, error)
+	WebDataTokenDecorator     = func(*ze.Request, *gin.Context) (*authn.Token, bool, error)
 )
 
 type CmdHandler interface {
@@ -78,10 +82,10 @@ type (
 )
 
 // Request, Params, Actor, Code, ID
-type HookFn[A Actor] = func(*ze.Request, Params, *A, string) (Params, error)
+type HookFn[A Actor] = func(*ze.Request, *A, string) error
 
 // Request, Params, Actor, Schema, Code, ID
-type TypedHookFn[A Actor, T any] = func(*ze.Request, Params, *A, *ze.Schema[T], Store[T], string) (Params, error)
+type TypedHookFn[A Actor, T any] = func(*ze.Request, *A, *ze.Schema[T], Store[T], string) error
 
 type Store[T any] interface {
 	GetByCode(string) (*T, bool)

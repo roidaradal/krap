@@ -85,7 +85,7 @@ func (task ListTask[T]) WebHandler() gin.HandlerFunc {
 func listTaskHandler[T any, P any](task *ListTask[T], cfg *listConfig[T, P]) func(P) {
 	return func(p P) {
 		// Initialize
-		rq, params, authToken, err := cfg.initialize(p)
+		rq, authToken, err := cfg.initialize(p)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
@@ -95,7 +95,7 @@ func listTaskHandler[T any, P any](task *ListTask[T], cfg *listConfig[T, P]) fun
 		var list *ds.List[*T]
 		if err == nil {
 			// Get data if authorized
-			list, err = task.Fn(rq, params)
+			list, err = task.Fn(rq)
 		}
 		cfg.outputFn(p, list, rq, err)
 	}
@@ -132,7 +132,7 @@ func (task CodedListTask[A, T]) WebHandler() gin.HandlerFunc {
 func codedListTaskHandler[A Actor, T any, P any](task *CodedListTask[A, T], cfg *codedListConfig[A, T, P], codeFn func(P) string) func(P) {
 	return func(p P) {
 		// Initialize
-		rq, params, actor, err := cfg.initialize(p)
+		rq, actor, err := cfg.initialize(p)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
@@ -143,13 +143,13 @@ func codedListTaskHandler[A Actor, T any, P any](task *CodedListTask[A, T], cfg 
 		}
 		// Get code and call validator
 		code := codeFn(p)
-		params, err = task.Validator(rq, params, actor, code)
+		err = task.Validator(rq, actor, code)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
 		}
 		// Get list after passing all checks
-		list, err := task.Fn(rq, params)
+		list, err := task.Fn(rq)
 		cfg.outputFn(p, list, rq, err)
 	}
 }

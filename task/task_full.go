@@ -93,7 +93,7 @@ func (task FullTask[A, T]) WebHandler() gin.HandlerFunc {
 func fullTaskHandler[A Actor, T any, P any](task *FullTask[A, T], cfg *taskConfig[A, T, P]) func(P) {
 	return func(p P) {
 		// Initialize
-		rq, params, actor, err := cfg.initialize(p)
+		rq, actor, err := cfg.initialize(p)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
@@ -105,7 +105,7 @@ func fullTaskHandler[A Actor, T any, P any](task *FullTask[A, T], cfg *taskConfi
 		var item *T = nil
 		if err == nil {
 			// Perform action if authorized
-			item, err = task.Fn(rq, params, actor)
+			item, err = task.Fn(rq, actor)
 		}
 		cfg.outputFn(p, item, rq, err)
 	}
@@ -128,7 +128,7 @@ func (task CodedFullTask[A, T]) WebHandler() gin.HandlerFunc {
 func codedFullTaskHandler[A Actor, T any, P any](task *CodedFullTask[A, T], cfg *taskConfig[A, T, P], codeFn func(P) string) func(P) {
 	return func(p P) {
 		// Initialize
-		rq, params, actor, err := cfg.initialize(p)
+		rq, actor, err := cfg.initialize(p)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
@@ -139,13 +139,13 @@ func codedFullTaskHandler[A Actor, T any, P any](task *CodedFullTask[A, T], cfg 
 		}
 		// Get code and call validator
 		code := codeFn(p)
-		params, err = task.Validator(rq, params, actor, code)
+		err = task.Validator(rq, actor, code)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
 		}
 		// Perform action
-		item, err := task.Fn(rq, params, actor)
+		item, err := task.Fn(rq, actor)
 		cfg.outputFn(p, item, rq, err)
 	}
 }

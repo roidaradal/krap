@@ -86,7 +86,7 @@ func (task ViewTask[T]) WebHandler() gin.HandlerFunc {
 func viewTaskHandler[T any, P any](task *ViewTask[T], cfg *viewConfig[T, P]) func(P) {
 	return func(p P) {
 		// Initialize
-		rq, params, authToken, err := cfg.initialize(p)
+		rq, authToken, err := cfg.initialize(p)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
@@ -96,7 +96,7 @@ func viewTaskHandler[T any, P any](task *ViewTask[T], cfg *viewConfig[T, P]) fun
 		var item *T
 		if err == nil {
 			// View if authorized
-			item, err = task.Fn(rq, params)
+			item, err = task.Fn(rq)
 		}
 		cfg.outputFn(p, item, rq, err)
 	}
@@ -133,7 +133,7 @@ func (task CodedViewTask[A, T]) WebHandler() gin.HandlerFunc {
 func codedViewTaskHandler[A Actor, T any, P any](task *CodedViewTask[A, T], cfg *codedViewConfig[A, T, P], codeFn func(P) string) func(P) {
 	return func(p P) {
 		// Initialize
-		rq, params, actor, err := cfg.initialize(p)
+		rq, actor, err := cfg.initialize(p)
 		if err != nil {
 			cfg.errorFn(p, rq, err)
 			return
@@ -141,14 +141,14 @@ func codedViewTaskHandler[A Actor, T any, P any](task *CodedViewTask[A, T], cfg 
 		// Check validator, if it exists
 		if task.Validator != nil {
 			code := codeFn(p)
-			params, err = task.Validator(rq, params, actor, code)
+			err = task.Validator(rq, actor, code)
 			if err != nil {
 				cfg.errorFn(p, rq, err)
 				return
 			}
 		}
 		// Get view
-		item, err := task.Fn(rq, params)
+		item, err := task.Fn(rq)
 		cfg.outputFn(p, item, rq, err)
 	}
 }
