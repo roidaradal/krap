@@ -89,6 +89,12 @@ github.com/roidaradal/rdb v0.13.18 h1:PKEVcHNjnhZjGozFgZTL4nBBq+wk/519gT2LnG8E90
 github.com/roidaradal/rdb v0.13.18/go.mod h1:toseulV23RwdSVftyMUNcVzs9pWHJ+JopElErQIzZnM=
 github.com/roidaradal/rdb v0.13.20 h1:15eV+a0ka/NliqBUfGh7TOmzyE9NFcXaVYCJTYAykUE=
 github.com/roidaradal/rdb v0.13.20/go.mod h1:toseulV23RwdSVftyMUNcVzs9pWHJ+JopElErQIzZnM=
+github.com/roidaradal/rdb v0.13.21 h1:MVSUjgLMhCQOG2XibRLz0sFb56xwDwnQ11TZ+dHhpTU=
+github.com/roidaradal/rdb v0.13.21/go.mod h1:iEQnIaupF+74qY+JuLyuksFRLxomNld1UXWOjs/X78Q=
+github.com/roidaradal/rdb v0.13.22 h1:fYuwMQtmtlWFC4EfSceURflMnmlyicAo7fBF5ClhECE=
+github.com/roidaradal/rdb v0.13.22/go.mod h1:iEQnIaupF+74qY+JuLyuksFRLxomNld1UXWOjs/X78Q=
+github.com/roidaradal/rdb v0.13.23 h1:UOVnrDAOgffbHtPyVVSywIo2RTNHLVclQ8grv87360Y=
+github.com/roidaradal/rdb v0.13.23/go.mod h1:iEQnIaupF+74qY+JuLyuksFRLxomNld1UXWOjs/X78Q=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.4.0/go.mod h1:YvHI0jy2hoMjB+UWwv71VJQ9isScKT/TqJzVSSt89Yw=
 github.com/stretchr/objx v0.5.0/go.mod h1:Yh+to48EsGEfYuaHDzXPcE3xhTkx73EhmCGUpEOglKo=

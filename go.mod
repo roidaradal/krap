@@ -5,7 +5,8 @@ go 1.25.0
 require (
 	github.com/gin-gonic/gin v1.11.0
 	github.com/roidaradal/fn v0.4.18
-	github.com/roidaradal/rdb v0.13.20
+	github.com/roidaradal/rdb v0.13.23
+	golang.org/x/sync v0.17.0
 	golang.org/x/term v0.36.0
 )
 
@@ -39,7 +40,6 @@ require (
 	golang.org/x/crypto v0.43.0 // indirect
 	golang.org/x/mod v0.28.0 // indirect
 	golang.org/x/net v0.45.0 // indirect
-	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/text v0.30.0 // indirect
 	golang.org/x/tools v0.37.0 // indirect
