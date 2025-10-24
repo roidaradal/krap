@@ -23,6 +23,12 @@ type Config sturct {
 }
 */
 
+var (
+	daemonStart    = dict.NewSyncMap[string, time.Time]()
+	daemonLast     = dict.NewSyncMap[string, time.Time]()
+	daemonDuration = dict.NewSyncMap[string, time.Duration]()
+)
+
 // Load Daemon Config which follows the expected structure,
 // Validates if any of the Interval values are 0 (invalid)
 func LoadConfig[T any](path string) (*T, error) {
@@ -52,11 +58,40 @@ func Run(name string, task func(), interval int, timeScale time.Duration) {
 		return
 	}
 	timeInterval := time.Duration(interval) * timeScale
+	daemonStart.Set(name, clock.TimeNow())
+	daemonDuration.Set(name, timeInterval)
 	go func() {
 		for {
 			start := clock.TimeNow()
+			daemonLast.Set(name, start)
 			task()
 			clock.Sleep(timeInterval, start)
 		}
 	}()
+}
+
+type Info struct {
+	Start    string
+	Last     string
+	Duration string
+}
+
+// Returns info on all running daemons
+func All() map[string]Info {
+	startTime := daemonStart.Map()
+	lastTime := daemonLast.Map()
+	durations := daemonDuration.Map()
+	info := make(map[string]Info)
+	for name, startTime := range startTime {
+		start := clock.StandardFormat(startTime)
+		var last, duration string
+		if dict.HasKey(lastTime, name) {
+			last = clock.StandardFormat(lastTime[name])
+		}
+		if dict.HasKey(durations, name) {
+			duration = fmt.Sprintf("%v", durations[name])
+		}
+		info[name] = Info{start, last, duration}
+	}
+	return info
 }

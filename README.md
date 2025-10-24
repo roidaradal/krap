@@ -107,6 +107,7 @@ Daemons
 
 * daemon.LoadConfig[T any](path string) (*T, error)
 * daemon.Run(name string, task func(), interval int, time.Duration)
+* daemon.All() map[string]Info
 
 ## root 
 * _type_: root.CmdHandler 
