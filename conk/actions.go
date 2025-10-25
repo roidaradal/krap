@@ -8,39 +8,46 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type ActionFn = func() error
-type RequestFn = func(*ze.Request) error
+type (
+	ActionFn    = func() error
+	ActionCtxFn = func(context.Context) error
+	RequestFn   = func(*ze.Request) error
+)
 
-// Perform actions (func() error) concurrently
-func Actions(actions []ActionFn) error {
-	return ActionsWithTimeout(actions, 0)
-}
-
-// Perform actions (func() error) concurrently, with timeout
-func ActionsWithTimeout(actions []ActionFn, timeoutSeconds uint) error {
-	ctx := context.Background()
-	if timeoutSeconds > 0 {
-		var cancel context.CancelFunc
-		duration := time.Duration(timeoutSeconds) * time.Second
-		ctx, cancel = context.WithTimeout(ctx, duration)
-		defer cancel()
-	}
-
-	group, ctx := errgroup.WithContext(ctx)
+// Perform actions (func() error) sequentially
+func ActionsLinear(actions []ActionFn) error {
 	for _, action := range actions {
-		group.Go(action)
+		if err := action(); err != nil {
+			return err
+		}
 	}
-
-	return group.Wait()
+	return nil
 }
 
-// Perform requests (func(*Request) error) concurrently
-func Requests(rq *ze.Request, requests []RequestFn) error {
-	return RequestsWithTimeout(rq, requests, 0)
+// Perform actions (func() error) concurrently, return first error
+// Waits for all actions to finish even if one has already returned error
+func Actions(actions []ActionFn) error {
+	var eg errgroup.Group
+	for _, action := range actions {
+		eg.Go(action)
+	}
+	return eg.Wait()
 }
 
-// Perform requests (func(*Request) error) concurrently, with timeout
-func RequestsWithTimeout(rq *ze.Request, requests []RequestFn, timeoutSeconds uint) error {
+// Perform contexed actions sequentially
+func ActionsCtxLinear(ctxActions []ActionCtxFn) error {
+	ctx := context.Background()
+	for _, ctxAction := range ctxActions {
+		if err := ctxAction(ctx); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Perform contexed actions concurrently, return first error
+// Actions have to check if context has cancelled to end early
+func ActionsCtx(ctxActions []ActionCtxFn, timeoutSeconds float64) error {
 	ctx := context.Background()
 	if timeoutSeconds > 0 {
 		var cancel context.CancelFunc
@@ -49,15 +56,36 @@ func RequestsWithTimeout(rq *ze.Request, requests []RequestFn, timeoutSeconds ui
 		defer cancel()
 	}
 
-	group, ctx := errgroup.WithContext(ctx)
+	eg, ctx := errgroup.WithContext(ctx)
+	for _, ctxAction := range ctxActions {
+		eg.Go(func() error {
+			return ctxAction(ctx)
+		})
+	}
+	return eg.Wait()
+}
+
+// Perform requests (func(*Request) error) sequentially
+func RequestsLinear(rq *ze.Request, requests []RequestFn) error {
 	for _, request := range requests {
-		group.Go(func() error {
+		if err := request(rq); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Perform requests (func(*Request) error) concurrently, return first error
+// Waits for all requests to finish even if one has already returned error
+func Requests(rq *ze.Request, requests []RequestFn) error {
+	var eg errgroup.Group
+	for _, request := range requests {
+		eg.Go(func() error {
 			srq := rq.SubRequest()
 			err := request(srq)
 			rq.MergeLogs(srq)
 			return err
 		})
 	}
-
-	return group.Wait()
+	return eg.Wait()
 }

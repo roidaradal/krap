@@ -6,13 +6,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/roidaradal/fn"
-	"github.com/roidaradal/fn/str"
 	"github.com/roidaradal/krap/authn"
 	"github.com/roidaradal/krap/authz"
 	"github.com/roidaradal/rdb/ze"
 )
 
-const actionGlue string = "-"
+// const actionGlue string = "-"
 
 var (
 	ErrInvalidActor  = errors.New("public: Invalid actor")
@@ -73,7 +72,7 @@ func (task BaseTask[A]) webInitialize(c *gin.Context) (*ze.Request, *A, error) {
 // Common BaseTask initialize
 func initialize[A Actor, P any](task *BaseTask[A], p P, decorator Decorator[A, P]) (*ze.Request, *A, error) {
 	// Create request
-	name := itemPrefix(task.Item)
+	name := task.FullAction()
 	rq, err := ze.NewRequest(name)
 	if err != nil {
 		return rq, nil, err
@@ -104,7 +103,7 @@ func (task BaseTokenTask) webInitialize(c *gin.Context) (*ze.Request, *authn.Tok
 // Common BaseTokenTask initialize
 func initializeToken[P any](task *BaseTokenTask, p P, decorator TokenDecorator[P]) (*ze.Request, *authn.Token, error) {
 	// Create request
-	name := itemPrefix(task.Item)
+	name := task.FullAction()
 	rq, err := ze.NewRequest(name)
 	if err != nil {
 		return rq, nil, err
@@ -135,8 +134,7 @@ func (task BaseDataTask[A]) webInitialize(c *gin.Context) (*ze.Request, *A, erro
 // Common BaseDataTask initialize
 func initializeData[A Actor, P any](task *BaseDataTask[A], p P, decorator DataDecorator[A, P]) (*ze.Request, *A, error) {
 	// Create request
-	name := itemPrefix(task.Item)
-	rq, err := ze.NewRequest(name)
+	rq, err := ze.NewRequest(task.Item) // temporary name, updated below
 	if err != nil {
 		return rq, nil, err
 	}
@@ -151,6 +149,7 @@ func initializeData[A Actor, P any](task *BaseDataTask[A], p P, decorator DataDe
 	// Attach action, item to request
 	rq.Action = fn.Ternary(mustBeActive, authz.VIEW, authz.ROWS)
 	rq.Item = task.Item
+	rq.Name = rq.Task.FullAction()
 	return rq, actor, nil
 }
 
@@ -167,8 +166,7 @@ func (task BaseDataTokenTask) webInitialize(c *gin.Context) (*ze.Request, *authn
 // Common BaseDataTokenTask initialize
 func initializeDataToken[P any](task *BaseDataTokenTask, p P, decorator DataTokenDecorator[P]) (*ze.Request, *authn.Token, error) {
 	// Create request
-	name := itemPrefix(task.Item)
-	rq, err := ze.NewRequest(name)
+	rq, err := ze.NewRequest(task.Item) // temporary name, updated below
 	if err != nil {
 		return rq, nil, err
 	}
@@ -183,6 +181,7 @@ func initializeDataToken[P any](task *BaseDataTokenTask, p P, decorator DataToke
 	// Attach action, item to request
 	rq.Action = fn.Ternary(mustBeActive, authz.VIEW, authz.ROWS)
 	rq.Item = task.Item
+	rq.Name = rq.Task.FullAction()
 	return rq, authnToken, nil
 }
 
@@ -193,18 +192,4 @@ func getCode(args []string, index int) string {
 		code = strings.ToUpper(args[index])
 	}
 	return code
-}
-
-// Gets the core item name, removes trailing "%s" if any
-func itemPrefix(item string) string {
-	if isCompleteItem(item) {
-		return item
-	}
-	parts := str.CleanSplit(item, actionGlue)
-	return strings.Join(parts[:len(parts)-1], actionGlue)
-}
-
-// Common: Checks if name ends in "%s"
-func isCompleteItem(item string) bool {
-	return !strings.HasPrefix(item, "%s")
 }

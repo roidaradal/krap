@@ -162,7 +162,7 @@ func getCommandParams(line string) (string, []string) {
 // Display help list
 func displayHelp(targetCommand string) {
 	targetCommand = strings.ToLower(targetCommand)
-	if _, ok := cmdMap[targetCommand]; !ok && targetCommand != allCommands {
+	if _, ok := cmdMap[targetCommand]; !ok && targetCommand != allCommands && !slices.Contains(helpSkipCommands, targetCommand) {
 		fmt.Println("Error: unknown command: ", targetCommand)
 		fmt.Println(getHelp)
 		return
