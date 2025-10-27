@@ -1,7 +1,12 @@
 v0.2.35 - Worker Pools 
-    - Commit: 
-    - conk.WorkersLinear, RequestWorkersLinear 
-    - conk.Workers, RequestWorkers
+    x Commit: 2025-10-27 14:44
+    x conk.WorkersLinear, RequestWorkersLinear 
+    x conk.Workers, RequestWorkers
+    x conk.DataWorkersLinear, RequestDataWorkersLinear 
+    x conk.DataWorkers, RequestDataWorkers
+    x Apply worker pool to authn:
+        x ArchiveExpiredSessions 
+        x ExtendSessions
 v0.2.34 - Authn Interface 
     x Commit: 2025-10-27 10:14
     x authn Interface cleanup

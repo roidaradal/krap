@@ -2,6 +2,8 @@ package authn
 
 import (
 	"github.com/roidaradal/fn/clock"
+	"github.com/roidaradal/fn/dict"
+	"github.com/roidaradal/krap/conk"
 	"github.com/roidaradal/rdb"
 	"github.com/roidaradal/rdb/ze"
 )
@@ -29,21 +31,37 @@ func extendSessions() (*ze.Request, error) {
 		return rq, ze.ErrMissingSchema
 	}
 
-	i, success, fail := 0, 0, 0
-	for authToken, timePair := range extensions {
-		i++
-		rq.AddFmtLog("%.2d / %.2d: ExtendSession: %s - %s", i, numExtend, authToken, timePair[1])
-
-		err = extendSession(rq, authToken, timePair)
-		if err != nil {
-			fail += 1
-			rq.AddFmtLog("Failed: %s", err.Error())
-		} else {
-			success += 1
-		}
+	// Concurrently extend sessions
+	extend := func(rq *ze.Request, entry dict.Entry[string, [2]ze.DateTime]) error {
+		authToken, timePair := entry.Key, entry.Value
+		return extendSession(rq, authToken, timePair)
 	}
-	sessionUpdates.Clear()
+	entries := dict.Entries(extensions)
+	result := conk.RequestWorkers(rq, entries, extend, 4)
+	success, fail := result.Success, len(result.Errors)
+	for i, entry := range entries {
+		if dict.NoKey(result.Errors, i) {
+			continue
+		}
+		rq.AddFmtLog("Failed to extend %s: %s", entry.Key, result.Errors[i].Error())
+	}
 
+	// Linear implementation
+	// i, success, fail := 0, 0, 0
+	// for authToken, timePair := range extensions {
+	// 	i++
+	// 	rq.AddFmtLog("%.2d / %.2d: ExtendSession: %s - %s", i, numExtend, authToken, timePair[1])
+
+	// 	err = extendSession(rq, authToken, timePair)
+	// 	if err != nil {
+	// 		fail += 1
+	// 		rq.AddFmtLog("Failed: %s", err.Error())
+	// 	} else {
+	// 		success += 1
+	// 	}
+	// }
+
+	sessionUpdates.Clear()
 	rq.AddFmtLog("Success: %d, Fail: %d", success, fail)
 	return rq, nil
 }

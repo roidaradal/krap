@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"github.com/roidaradal/fn/clock"
+	"github.com/roidaradal/fn/dict"
+	"github.com/roidaradal/krap/conk"
 	"github.com/roidaradal/rdb"
 	"github.com/roidaradal/rdb/ze"
 )
@@ -75,18 +77,31 @@ func archiveExpiredSessions() (*ze.Request, error) {
 		return rq, nil // end early if no expired
 	}
 
-	success, fail := 0, 0
-	for i, session := range expired {
-		rq.AddFmtLog("%.2d / %.2d: ArchiveExpiredSession: %s", i+1, numExpired, session.Token.String())
-
-		err = archiveSession(rq, session, sessionExpired)
-		if err != nil {
-			fail += 1
-			rq.AddFmtLog("Failed: %s", err.Error())
-		} else {
-			success += 1
-		}
+	// Concurrently archive expired sessions
+	archiveExpired := func(rq *ze.Request, session *Session) error {
+		return archiveSession(rq, session, sessionExpired)
 	}
+	result := conk.RequestWorkers(rq, expired, archiveExpired, 2)
+	success, fail := result.Success, len(result.Errors)
+	for i, session := range expired {
+		if dict.NoKey(result.Errors, i) {
+			continue
+		}
+		rq.AddFmtLog("Failed to archive %s: %s", session.Token.String(), result.Errors[i].Error())
+	}
+
+	// Linear implementation
+	// success, fail := 0, 0
+	// for i, session := range expired {
+	// 	rq.AddFmtLog("%.2d / %.2d: ArchiveExpiredSession: %s", i+1, numExpired, session.Token.String())
+	// 	err = archiveSession(rq, session, sessionExpired)
+	// 	if err != nil {
+	// 		fail += 1
+	// 		rq.AddFmtLog("Failed: %s", err.Error())
+	// 	} else {
+	// 		success += 1
+	// 	}
+	// }
 
 	rq.AddFmtLog("Success: %d, Fail: %d", success, fail)
 	return rq, nil
