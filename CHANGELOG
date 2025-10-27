@@ -1,3 +1,10 @@
+v0.2.35 - Worker Pools 
+    - Commit: 
+    - conk.WorkersLinear, RequestWorkersLinear 
+    - conk.Workers, RequestWorkers
+v0.2.34 - Authn Interface 
+    x Commit: 2025-10-27 10:14
+    x authn Interface cleanup
 v0.2.33 - Concurrent Context
     x Commit: 2025-10-25 11:30
     x conk.ActionsLinear, RequestsLinear 

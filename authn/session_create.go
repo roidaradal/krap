@@ -15,7 +15,7 @@ import (
 type PostAuthHook[T any] = func(*ze.Request, *T)
 
 // Authenticate account
-func authenticateAccount[T Authable](rq *ze.Request, params *Params, schema *ze.Schema[T], condition rdb.Condition) (*T, error) {
+func authenticateAccount[T Checkable](rq *ze.Request, params *Params, schema *ze.Schema[T], condition rdb.Condition) (*T, error) {
 	if condition == nil {
 		rq.AddLog("Missing condition for authenticate account")
 		return nil, ze.ErrMissingParams
@@ -39,7 +39,7 @@ func authenticateAccount[T Authable](rq *ze.Request, params *Params, schema *ze.
 }
 
 // Creates new session
-func newSession[T Authable](rq *ze.Request, accountRef *T, origin *krap.RequestOrigin) (*Session, error) {
+func newSession[T identifiable](rq *ze.Request, accountRef *T, origin *krap.RequestOrigin) (*Session, error) {
 	if Sessions == nil {
 		return nil, ze.ErrMissingSchema
 	}

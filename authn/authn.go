@@ -121,7 +121,7 @@ func IsValidSession(authToken *Token) (bool, *ze.Request, error) {
 }
 
 // Authenticate account
-func AuthenticateAccount[T Authable](authParams *Params, schema *ze.Schema[T], condition rdb.Condition) (*T, *ze.Request, error) {
+func AuthenticateAccount[T Checkable](authParams *Params, schema *ze.Schema[T], condition rdb.Condition) (*T, *ze.Request, error) {
 	rq, err := ze.NewRequest("Authenticate%s", schema.Name)
 	if err != nil {
 		return nil, rq, err

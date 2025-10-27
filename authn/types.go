@@ -15,10 +15,18 @@ const (
 	sessionLogout   string = "LOGOUT"
 )
 
-type Authable interface {
+type identifiable interface {
 	GetID() ze.ID
 	GetType() string
+}
+
+type Checkable interface {
 	GetPassword() string
+}
+
+type Authable interface {
+	identifiable
+	Checkable
 }
 
 type Session struct {
