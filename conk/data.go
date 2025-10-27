@@ -27,15 +27,13 @@ func DataWorkersLinear[I any, O any](items []I, fn DataWorkerFn[I, O]) *DataResu
 }
 
 // Perform data work (func(I) (O, error)) concurrently
-func DataWorkers[I any, O any](items []I, fn DataWorkerFn[I, O], numWorkers uint) *DataResult[O] {
-	// Worker function
-	worker := func(inputCh <-chan inputData[I], outputCh chan<- outputData[O]) {
-		for input := range inputCh {
-			out, err := fn(input.item)
-			outputCh <- outputData[O]{input.index, out, err}
-		}
+func DataWorkers[I any, O any](items []I, fn DataWorkerFn[I, O], numWorkers int) *DataResult[O] {
+	// Work function
+	work := func(index int, item I, workerCh chan<- outputData[O]) {
+		out, err := fn(item)
+		workerCh <- outputData[O]{index, out, err}
 	}
-	return dataWorkerPool(items, worker, numWorkers)
+	return dataFanOutIn(items, work, numWorkers)
 }
 
 // Perform request data work (func(*Request, I) (O, error)) sequentially
@@ -54,44 +52,52 @@ func RequestDataWorkersLinear[I any, O any](rq *ze.Request, items []I, fn Reques
 }
 
 // Perform request data work (func(I) (O, error)) concurrently
-func RequestDataWorkers[I any, O any](rq *ze.Request, items []I, fn RequestDataWorkerFn[I, O], numWorkers uint) *DataResult[O] {
-	// Worker function
-	worker := func(inputCh <-chan inputData[I], outputCh chan<- outputData[O]) {
+func RequestDataWorkers[I any, O any](rq *ze.Request, items []I, fn RequestDataWorkerFn[I, O], numWorkers int) *DataResult[O] {
+	// Work function
+	work := func(index int, item I, workerCh chan<- outputData[O]) {
 		srq := rq.SubRequest()
-		for input := range inputCh {
-			out, err := fn(srq, input.item)
-			outputCh <- outputData[O]{input.index, out, err}
-		}
+		out, err := fn(srq, item)
+		workerCh <- outputData[O]{index, out, err}
 		rq.MergeLogs(srq)
 	}
-	return dataWorkerPool(items, worker, numWorkers)
+	return dataFanOutIn(items, work, numWorkers)
 }
 
 // Common: data worker pool
-type dataWorkerFn[I any, O any] = func(<-chan inputData[I], chan<- outputData[O])
+type dataWorkerFn[I any, O any] = func(int, I, chan<- outputData[O])
 
-func dataWorkerPool[I any, O any](items []I, worker dataWorkerFn[I, O], numWorkers uint) *DataResult[O] {
+func dataFanOutIn[I any, O any](items []I, work dataWorkerFn[I, O], numWorkers int) *DataResult[O] {
 	numWorkers = max(numWorkers, 1) // lower-bound: 1 worker
-	inputCh := make(chan inputData[I])
-	outputCh := make(chan outputData[O], numWorkers) // need buffered, otherwise deadlocks
+	numItems := len(items)
 
-	// Spawn workers
+	// Fan-out the workload
+	channels := make([]<-chan outputData[O], numWorkers)
+	for workerID := range numWorkers {
+		workerCh := make(chan outputData[O])
+		channels[workerID] = workerCh
+
+		// Start worker goroutine
+		// Labor division scheme: Process i % numWorkers for each worker
+		go func() {
+			for i := workerID; i < numItems; i += numWorkers {
+				work(i, items[i], workerCh)
+			}
+			close(workerCh)
+		}()
+	}
+
+	// Fan-in the results
 	var wg sync.WaitGroup
-	for range numWorkers {
+	outputCh := make(chan outputData[O], numWorkers) // buffered
+	for _, workerCh := range channels {
 		wg.Go(func() {
-			worker(inputCh, outputCh)
+			for out := range workerCh {
+				outputCh <- out
+			}
 		})
 	}
 
-	// Feed input items to input channel
-	go func() {
-		for i, item := range items {
-			inputCh <- inputData[I]{i, item}
-		}
-		close(inputCh)
-	}()
-
-	// Wait for all workers to finish and close output channel
+	// Wait for all channels to close and close main output channel
 	go func() {
 		wg.Wait()
 		close(outputCh)

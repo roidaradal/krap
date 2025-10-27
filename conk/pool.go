@@ -26,7 +26,7 @@ func WorkersLinear[T any](items []T, fn WorkerFn[T]) *Result {
 }
 
 // Perform work (func(T) error) concurrently
-func Workers[T any](items []T, fn WorkerFn[T], numWorkers uint) *Result {
+func Workers[T any](items []T, fn WorkerFn[T], numWorkers int) *Result {
 	// Worker function
 	worker := func(inputCh <-chan inputData[T], resultCh chan<- resultData) {
 		for input := range inputCh {
@@ -52,7 +52,7 @@ func RequestWorkersLinear[T any](rq *ze.Request, items []T, fn RequestWorkerFn[T
 }
 
 // Perform request work (func(*Request, T) error) concurrently
-func RequestWorkers[T any](rq *ze.Request, items []T, fn RequestWorkerFn[T], numWorkers uint) *Result {
+func RequestWorkers[T any](rq *ze.Request, items []T, fn RequestWorkerFn[T], numWorkers int) *Result {
 	// Worker function
 	worker := func(inputCh <-chan inputData[T], resultCh chan<- resultData) {
 		srq := rq.SubRequest()
@@ -69,7 +69,7 @@ func RequestWorkers[T any](rq *ze.Request, items []T, fn RequestWorkerFn[T], num
 // Common: worker pool
 type workerFn[T any] = func(<-chan inputData[T], chan<- resultData)
 
-func workerPool[T any](items []T, worker workerFn[T], numWorkers uint) *Result {
+func workerPool[T any](items []T, worker workerFn[T], numWorkers int) *Result {
 	numWorkers = max(numWorkers, 1) // lower-bound: 1 worker
 	inputCh := make(chan inputData[T])
 	resultCh := make(chan resultData, numWorkers) // need buffered, otherwise deadlocks

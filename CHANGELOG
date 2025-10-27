@@ -1,3 +1,6 @@
+v0.2.36 - Fan-Out / Fan-In 
+    x Commit: 2025-10-27 16:54
+    x Replace DataWorkers and RequestDataWorkers with FanOut/FanIn
 v0.2.35 - Worker Pools 
     x Commit: 2025-10-27 14:44
     x conk.WorkersLinear, RequestWorkersLinear 
