@@ -1,3 +1,8 @@
+v0.2.37 - Cache Store 
+    x Commit: 2025-10-28 11:11
+    x Store[T]: codeable 
+    x IDStore[T]: idcodeable 
+    x UseCache guards, cache.Use
 v0.2.36 - Fan-Out / Fan-In 
     x Commit: 2025-10-27 16:54
     x Replace DataWorkers and RequestDataWorkers with FanOut/FanIn

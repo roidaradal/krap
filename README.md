@@ -117,3 +117,7 @@ Daemons
 * root.SetCommandMap(map[string]*krap.CmdConfig)
 * root.Authenticate(func(string) error)
 * root.MainLoop(func())
+
+## cache 
+* cache.Use(true)
+* 
