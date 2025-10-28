@@ -1,0 +1,68 @@
+package cache
+
+import (
+	"slices"
+
+	"github.com/roidaradal/fn"
+	"github.com/roidaradal/rdb/ze"
+)
+
+type child interface {
+	ParentID() ze.ID
+}
+
+type codeableChild interface {
+	codeable
+	child
+}
+
+type idcodeableChild interface {
+	idcodeable
+	child
+}
+
+// T is expected to be a reference type
+type ChildStore[T codeableChild] struct {
+	*Store[T]
+}
+
+// T is expected to be a reference type
+type ChildIDStore[T idcodeableChild] struct {
+	*IDStore[T]
+}
+
+// Create new ChildStore
+func NewChildStore[T codeableChild]() *ChildStore[T] {
+	return &ChildStore[T]{
+		Store: NewStore[T](),
+	}
+}
+
+// Create new ChildIDStore
+func NewChildIDStore[T idcodeableChild]() *ChildIDStore[T] {
+	return &ChildIDStore[T]{
+		IDStore: NewIDStore[T](),
+	}
+}
+
+// Get items with parent IDs
+func (s *ChildStore[T]) FromParentIDs(parentIDs ...ze.ID) []T {
+	if !useCache || len(parentIDs) == 0 {
+		return nil
+	}
+	items := fn.Filter(s.All(), func(item T) bool {
+		return slices.Contains(parentIDs, item.ParentID())
+	})
+	return items
+}
+
+// Get items with parent IDs
+func (s *ChildIDStore[T]) FromParentIDs(parentIDs ...ze.ID) []T {
+	if !useCache || len(parentIDs) == 0 {
+		return nil
+	}
+	items := fn.Filter(s.All(), func(item T) bool {
+		return slices.Contains(parentIDs, item.ParentID())
+	})
+	return items
+}

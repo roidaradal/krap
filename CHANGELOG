@@ -1,3 +1,7 @@
+v0.2.38 - Child Store 
+    x Commit: 2025-10-28 13:05
+    x ChildStore
+    x ChildIDStore
 v0.2.37 - Cache Store 
     x Commit: 2025-10-28 11:11
     x Store[T]: codeable 
