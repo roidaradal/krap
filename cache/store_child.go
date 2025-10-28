@@ -8,7 +8,7 @@ import (
 )
 
 type child interface {
-	ParentID() ze.ID
+	GetParentID() ze.ID
 }
 
 type codeableChild interface {
@@ -51,7 +51,7 @@ func (s *ChildStore[T]) FromParentIDs(parentIDs ...ze.ID) []T {
 		return nil
 	}
 	items := fn.Filter(s.All(), func(item T) bool {
-		return slices.Contains(parentIDs, item.ParentID())
+		return slices.Contains(parentIDs, item.GetParentID())
 	})
 	return items
 }
@@ -62,7 +62,7 @@ func (s *ChildIDStore[T]) FromParentIDs(parentIDs ...ze.ID) []T {
 		return nil
 	}
 	items := fn.Filter(s.All(), func(item T) bool {
-		return slices.Contains(parentIDs, item.ParentID())
+		return slices.Contains(parentIDs, item.GetParentID())
 	})
 	return items
 }

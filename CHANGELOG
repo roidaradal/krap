@@ -1,3 +1,6 @@
+v0.2.39 - Child Store Interface 
+    x Commit: 2025-10-28 13:18
+    x Update Child interface to GetParentID()
 v0.2.38 - Child Store 
     x Commit: 2025-10-28 13:05
     x ChildStore
