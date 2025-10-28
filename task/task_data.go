@@ -3,7 +3,6 @@ package task
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/roidaradal/krap"
-	"github.com/roidaradal/krap/authz"
 	"github.com/roidaradal/krap/root"
 	"github.com/roidaradal/rdb/ze"
 )
@@ -80,27 +79,7 @@ func (task DataTask[T]) WebHandler() gin.HandlerFunc {
 	return dataTaskHandler(&task, cfg)
 }
 
-// Common: create ListTask Handler
-func dataTaskHandler[T any, P any](task *DataTask[T], cfg *dataConfig[T, P]) func(P) {
-	return func(p P) {
-		// Initialize
-		rq, authToken, err := cfg.initialize(p)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		// Check Authorization
-		err = authz.CheckActionAllowedFor(rq, authToken.Type)
-		var data *T
-		if err == nil {
-			// Get data if authorized
-			data, err = task.Fn(rq)
-		}
-		cfg.outputFn(p, data, rq, err)
-	}
-}
-
-// CodedListTask CmdHandler
+// CodedDataTask CmdHandler
 func (task CodedDataTask[A, T]) CmdHandler() root.CmdHandler {
 	cfg := &codedDataConfig[A, T, []string]{
 		baseActorConfig: &baseActorConfig[A, []string]{},
@@ -116,7 +95,7 @@ func (task CodedDataTask[A, T]) CmdHandler() root.CmdHandler {
 	return codedDataTaskHandler(&task, cfg, codeFn)
 }
 
-// CodedListTask WebHandler
+// CodedDataTask WebHandler
 func (task CodedDataTask[A, T]) WebHandler() gin.HandlerFunc {
 	cfg := &codedDataConfig[A, T, *gin.Context]{
 		baseActorConfig: &baseActorConfig[A, *gin.Context]{},
@@ -125,30 +104,4 @@ func (task CodedDataTask[A, T]) WebHandler() gin.HandlerFunc {
 	cfg.errorFn = krap.SendDataError
 	cfg.outputFn = krap.SendDataResponse
 	return codedDataTaskHandler(&task, cfg, krap.WebCodeOption)
-}
-
-// Common: create CodedListTask Handler
-func codedDataTaskHandler[A Actor, T any, P any](task *CodedDataTask[A, T], cfg *codedDataConfig[A, T, P], codeFn func(P) string) func(P) {
-	return func(p P) {
-		// Initialize
-		rq, actor, err := cfg.initialize(p)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		if task.Validator == nil {
-			cfg.errorFn(p, rq, errMissingHook)
-			return
-		}
-		// Get code and call validator
-		code := codeFn(p)
-		err = task.Validator(rq, actor, code)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		// Get data after passing all checks
-		data, err := task.Fn(rq)
-		cfg.outputFn(p, data, rq, err)
-	}
 }

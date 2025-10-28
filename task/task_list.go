@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/roidaradal/fn/ds"
 	"github.com/roidaradal/krap"
-	"github.com/roidaradal/krap/authz"
 	"github.com/roidaradal/krap/root"
 	"github.com/roidaradal/rdb/ze"
 )
@@ -81,26 +80,6 @@ func (task ListTask[T]) WebHandler() gin.HandlerFunc {
 	return listTaskHandler(&task, cfg)
 }
 
-// Common: create ListTask Handler
-func listTaskHandler[T any, P any](task *ListTask[T], cfg *listConfig[T, P]) func(P) {
-	return func(p P) {
-		// Initialize
-		rq, authToken, err := cfg.initialize(p)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		// Check Authorization
-		err = authz.CheckActionAllowedFor(rq, authToken.Type)
-		var list *ds.List[*T]
-		if err == nil {
-			// Get data if authorized
-			list, err = task.Fn(rq)
-		}
-		cfg.outputFn(p, list, rq, err)
-	}
-}
-
 // CodedListTask CmdHandler
 func (task CodedListTask[A, T]) CmdHandler() root.CmdHandler {
 	cfg := &codedListConfig[A, T, []string]{
@@ -126,30 +105,4 @@ func (task CodedListTask[A, T]) WebHandler() gin.HandlerFunc {
 	cfg.errorFn = krap.SendDataError
 	cfg.outputFn = krap.SendDataResponse
 	return codedListTaskHandler(&task, cfg, krap.WebCodeOption)
-}
-
-// Common: create CodedListTask Handler
-func codedListTaskHandler[A Actor, T any, P any](task *CodedListTask[A, T], cfg *codedListConfig[A, T, P], codeFn func(P) string) func(P) {
-	return func(p P) {
-		// Initialize
-		rq, actor, err := cfg.initialize(p)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		if task.Validator == nil {
-			cfg.errorFn(p, rq, errMissingHook)
-			return
-		}
-		// Get code and call validator
-		code := codeFn(p)
-		err = task.Validator(rq, actor, code)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		// Get list after passing all checks
-		list, err := task.Fn(rq)
-		cfg.outputFn(p, list, rq, err)
-	}
 }

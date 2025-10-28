@@ -28,16 +28,9 @@ func NewIDStore[T idcodeable]() *IDStore[T] {
 	}
 }
 
-// Create new disabled IDStore
-func NewDisabledIDStore[T idcodeable]() *IDStore[T] {
-	return &IDStore[T]{
-		Store: NewDisabledStore[T](),
-	}
-}
-
 // Get item by ID
 func (s *IDStore[T]) GetByID(id ze.ID) (T, bool) {
-	if s.IsDisabled() {
+	if !useCache {
 		var t T
 		return t, false
 	}
@@ -46,7 +39,7 @@ func (s *IDStore[T]) GetByID(id ze.ID) (T, bool) {
 
 // Add items to IDStore
 func (s *IDStore[T]) AddItems(items []T) {
-	if s.IsDisabled() {
+	if !useCache {
 		return
 	}
 	for _, item := range items {
@@ -56,7 +49,7 @@ func (s *IDStore[T]) AddItems(items []T) {
 
 // Add item to IDStore
 func (s *IDStore[T]) Add(item T) {
-	if s.IsDisabled() {
+	if !useCache {
 		return
 	}
 	s.Store.Add(item) // Add in codeMap
@@ -69,7 +62,7 @@ func (s *IDStore[T]) Add(item T) {
 
 // Update item in IDStore
 func (s *IDStore[T]) Update(item T) {
-	if s.IsDisabled() {
+	if !useCache {
 		return
 	}
 	s.Store.Update(item) // Add in codeMap
@@ -78,7 +71,7 @@ func (s *IDStore[T]) Update(item T) {
 
 // Toggle item in IDStore by code
 func (s *IDStore[T]) ToggleByCode(code string, isActive bool) {
-	if s.IsDisabled() {
+	if !useCache {
 		return
 	}
 	item, ok := s.GetByCode(code)
@@ -91,7 +84,7 @@ func (s *IDStore[T]) ToggleByCode(code string, isActive bool) {
 
 // Toggle item in IDStore by ID
 func (s *IDStore[T]) ToggleByID(id ze.ID, isActive bool) {
-	if s.IsDisabled() {
+	if !useCache {
 		return
 	}
 	item, ok := s.GetByID(id)
@@ -104,7 +97,7 @@ func (s *IDStore[T]) ToggleByID(id ze.ID, isActive bool) {
 
 // Delete item in IDStore by code
 func (s *IDStore[T]) DeleteByCode(code string) {
-	if s.IsDisabled() {
+	if !useCache {
 		return
 	}
 	s.Store.DeleteByCode(code)
@@ -115,7 +108,7 @@ func (s *IDStore[T]) DeleteByCode(code string) {
 
 // Delete item in IDStore by ID
 func (s *IDStore[T]) DeleteByID(id ze.ID) {
-	if s.IsDisabled() {
+	if !useCache {
 		return
 	}
 	s.idMap.Delete(id)
@@ -126,7 +119,7 @@ func (s *IDStore[T]) DeleteByID(id ze.ID) {
 
 // Return ID => Code lookup
 func (s *IDStore[T]) IDCodeLookup() map[ze.ID]string {
-	if s.IsDisabled() {
+	if !useCache {
 		return nil
 	}
 	return s.idCode.Map()

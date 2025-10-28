@@ -3,7 +3,6 @@ package task
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/roidaradal/krap"
-	"github.com/roidaradal/krap/authz"
 	"github.com/roidaradal/krap/root"
 	"github.com/roidaradal/rdb/ze"
 )
@@ -89,28 +88,6 @@ func (task FullTask[A, T]) WebHandler() gin.HandlerFunc {
 	return fullTaskHandler(&task, webTaskConfig[A, T](task.BaseTask))
 }
 
-// Common: create FullTask Handler
-func fullTaskHandler[A Actor, T any, P any](task *FullTask[A, T], cfg *taskConfig[A, T, P]) func(P) {
-	return func(p P) {
-		// Initialize
-		rq, actor, err := cfg.initialize(p)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		// Check Authorization if not deferred
-		if !task.DeferActionCheck {
-			err = authz.CheckActionAllowedFor(rq, (*actor).GetRole())
-		}
-		var item *T = nil
-		if err == nil {
-			// Perform action if authorized
-			item, err = task.Fn(rq, actor)
-		}
-		cfg.outputFn(p, item, rq, err)
-	}
-}
-
 // CodedFullTask CmdHandler
 func (task CodedFullTask[A, T]) CmdHandler() root.CmdHandler {
 	codeFn := func(args []string) string {
@@ -122,30 +99,4 @@ func (task CodedFullTask[A, T]) CmdHandler() root.CmdHandler {
 // CodedFullTask WebHandler
 func (task CodedFullTask[A, T]) WebHandler() gin.HandlerFunc {
 	return codedFullTaskHandler(&task, webTaskConfig[A, T](task.BaseTask), krap.WebCodeParam)
-}
-
-// Common: create CodedFullTask Handler
-func codedFullTaskHandler[A Actor, T any, P any](task *CodedFullTask[A, T], cfg *taskConfig[A, T, P], codeFn func(P) string) func(P) {
-	return func(p P) {
-		// Initialize
-		rq, actor, err := cfg.initialize(p)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		if task.Validator == nil {
-			cfg.errorFn(p, rq, errMissingHook)
-			return
-		}
-		// Get code and call validator
-		code := codeFn(p)
-		err = task.Validator(rq, actor, code)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		// Perform action
-		item, err := task.Fn(rq, actor)
-		cfg.outputFn(p, item, rq, err)
-	}
 }

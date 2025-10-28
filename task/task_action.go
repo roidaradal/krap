@@ -3,7 +3,6 @@ package task
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/roidaradal/krap"
-	"github.com/roidaradal/krap/authz"
 	"github.com/roidaradal/krap/root"
 	"github.com/roidaradal/rdb/ze"
 )
@@ -107,25 +106,6 @@ func (task ActionTask[A]) WebHandler() gin.HandlerFunc {
 	return actionTaskHandler(&task, webActionConfig(task.BaseTask))
 }
 
-// Common: create ActionTask Handler
-func actionTaskHandler[A Actor, P any](task *ActionTask[A], cfg *actionConfig[A, P]) func(P) {
-	return func(p P) {
-		// Initialize
-		rq, actor, err := cfg.initialize(p)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		// Check Authorization
-		err = authz.CheckActionAllowedFor(rq, (*actor).GetRole())
-		if err == nil {
-			// Perform action if authorized
-			err = task.Fn(rq, actor)
-		}
-		cfg.outputFn(p, rq, err)
-	}
-}
-
 // CodedActionTask CmdHandler
 func (task CodedActionTask[A]) CmdHandler() root.CmdHandler {
 	codeFn := func(args []string) string {
@@ -139,32 +119,6 @@ func (task CodedActionTask[A]) WebHandler() gin.HandlerFunc {
 	return codedActionTaskHandler(&task, webActionConfig(task.BaseTask), krap.WebCodeParam)
 }
 
-// Common: create CodedActionTask Handler
-func codedActionTaskHandler[A Actor, P any](task *CodedActionTask[A], cfg *actionConfig[A, P], codeFn func(P) string) func(P) {
-	return func(p P) {
-		// Initialize
-		rq, actor, err := cfg.initialize(p)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		if task.Validator == nil {
-			cfg.errorFn(p, rq, errMissingHook)
-			return
-		}
-		// Get code and call validator
-		code := codeFn(p)
-		err = task.Validator(rq, actor, code)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		// Perform action
-		err = task.Fn(rq, actor)
-		cfg.outputFn(p, rq, err)
-	}
-}
-
 // TypedActionTask CmdHandler
 func (task TypedActionTask[A, T]) CmdHandler() root.CmdHandler {
 	codeFn := func(args []string) string {
@@ -176,30 +130,4 @@ func (task TypedActionTask[A, T]) CmdHandler() root.CmdHandler {
 // TypedActionTask WebHandler
 func (task TypedActionTask[A, T]) WebHandler() gin.HandlerFunc {
 	return typedActionTaskHandler(&task, webActionConfig(task.BaseTask), krap.WebCodeParam)
-}
-
-// Common: create TypedActionTask Handler
-func typedActionTaskHandler[A Actor, T any, P any](task *TypedActionTask[A, T], cfg *actionConfig[A, P], codeFn func(P) string) func(P) {
-	return func(p P) {
-		// Initialize
-		rq, actor, err := cfg.initialize(p)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		if task.Validator == nil {
-			cfg.errorFn(p, rq, errMissingHook)
-			return
-		}
-		// Get code and call validator
-		code := codeFn(p)
-		err = task.Validator(rq, actor, task.Schema, task.Store, code)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		// Perform action
-		err = task.Fn(rq, actor)
-		cfg.outputFn(p, rq, err)
-	}
 }

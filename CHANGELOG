@@ -1,3 +1,6 @@
+v0.2.42 - Remove Cache IsActive
+    x Commit: 2025-10-28 19:52
+    x Remove isActive from Cache Stores
 v0.2.41 - Cache.IsDisabled
     x Commit: 2025-10-28 15:15
     x Make cache.IsDisabled public

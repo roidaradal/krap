@@ -82,26 +82,6 @@ func (task ViewTask[T]) WebHandler() gin.HandlerFunc {
 	return viewTaskHandler(&task, cfg)
 }
 
-// Common: create ViewTask Handler
-func viewTaskHandler[T any, P any](task *ViewTask[T], cfg *viewConfig[T, P]) func(P) {
-	return func(p P) {
-		// Initialize
-		rq, authToken, err := cfg.initialize(p)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		// Check Authorization
-		err = authz.CheckActionAllowedFor(rq, authToken.Type)
-		var item *T
-		if err == nil {
-			// View if authorized
-			item, err = task.Fn(rq)
-		}
-		cfg.outputFn(p, item, rq, err)
-	}
-}
-
 // CodedViewTask CmdHandler
 func (task CodedViewTask[A, T]) CmdHandler() root.CmdHandler {
 	cfg := &codedViewConfig[A, T, []string]{
@@ -127,28 +107,4 @@ func (task CodedViewTask[A, T]) WebHandler() gin.HandlerFunc {
 	cfg.errorFn = krap.SendDataError
 	cfg.outputFn = krap.SendDataResponse
 	return codedViewTaskHandler(&task, cfg, krap.WebCodeParam)
-}
-
-// Common: create CodedViewTask Handler
-func codedViewTaskHandler[A Actor, T any, P any](task *CodedViewTask[A, T], cfg *codedViewConfig[A, T, P], codeFn func(P) string) func(P) {
-	return func(p P) {
-		// Initialize
-		rq, actor, err := cfg.initialize(p)
-		if err != nil {
-			cfg.errorFn(p, rq, err)
-			return
-		}
-		// Check validator, if it exists
-		if task.Validator != nil {
-			code := codeFn(p)
-			err = task.Validator(rq, actor, code)
-			if err != nil {
-				cfg.errorFn(p, rq, err)
-				return
-			}
-		}
-		// Get view
-		item, err := task.Fn(rq)
-		cfg.outputFn(p, item, rq, err)
-	}
 }

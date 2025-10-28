@@ -11,41 +11,31 @@ type codeable interface {
 
 // T is expected to be a reference type
 type Store[T codeable] struct {
-	isActive bool
-	codeMap  *dict.SyncMap[string, T]
+	codeMap *dict.SyncMap[string, T]
 }
 
 // Create new Store
 func NewStore[T codeable]() *Store[T] {
 	return &Store[T]{
-		isActive: true,
-		codeMap:  dict.NewSyncMap[string, T](),
+		codeMap: dict.NewSyncMap[string, T](),
 	}
-}
-
-// Create new disabled Store
-func NewDisabledStore[T codeable]() *Store[T] {
-	return &Store[T]{
-		isActive: false,
-		codeMap:  nil,
-	}
-}
-
-func (s *Store[T]) IsDisabled() bool {
-	return !useCache || !s.isActive
 }
 
 // Gets all stored objects
 func (s *Store[T]) All() []T {
-	if s.IsDisabled() {
+	if !useCache {
 		return nil
 	}
-	return s.codeMap.Values()
+	items := s.codeMap.Values()
+	if len(items) == 0 {
+		return nil
+	}
+	return items
 }
 
 // Get item by code
 func (s *Store[T]) GetByCode(code string) (T, bool) {
-	if s.IsDisabled() {
+	if !useCache {
 		var t T
 		return t, false
 	}
@@ -54,7 +44,7 @@ func (s *Store[T]) GetByCode(code string) (T, bool) {
 
 // Add items to store
 func (s *Store[T]) AddItems(items []T) {
-	if s.IsDisabled() {
+	if !useCache {
 		return
 	}
 	for _, item := range items {
@@ -64,7 +54,7 @@ func (s *Store[T]) AddItems(items []T) {
 
 // Add item to store
 func (s *Store[T]) Add(item T) {
-	if s.IsDisabled() {
+	if !useCache {
 		return
 	}
 	s.codeMap.Set(item.GetCode(), item)
@@ -72,7 +62,7 @@ func (s *Store[T]) Add(item T) {
 
 // Update item in store
 func (s *Store[T]) Update(item T) {
-	if s.IsDisabled() {
+	if !useCache {
 		return
 	}
 	s.codeMap.Set(item.GetCode(), item)
@@ -80,7 +70,7 @@ func (s *Store[T]) Update(item T) {
 
 // Toggle item in store by code
 func (s *Store[T]) ToggleByCode(code string, isActive bool) {
-	if s.IsDisabled() {
+	if !useCache {
 		return
 	}
 	item, ok := s.GetByCode(code)
@@ -93,7 +83,7 @@ func (s *Store[T]) ToggleByCode(code string, isActive bool) {
 
 // Delete item in store by code
 func (s *Store[T]) DeleteByCode(code string) {
-	if s.IsDisabled() {
+	if !useCache {
 		return
 	}
 	s.codeMap.Delete(code)
