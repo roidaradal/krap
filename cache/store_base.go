@@ -31,13 +31,13 @@ func NewDisabledStore[T codeable]() *Store[T] {
 	}
 }
 
-func (s *Store[T]) isDisabled() bool {
+func (s *Store[T]) IsDisabled() bool {
 	return !useCache || !s.isActive
 }
 
 // Gets all stored objects
 func (s *Store[T]) All() []T {
-	if s.isDisabled() {
+	if s.IsDisabled() {
 		return nil
 	}
 	return s.codeMap.Values()
@@ -45,7 +45,7 @@ func (s *Store[T]) All() []T {
 
 // Get item by code
 func (s *Store[T]) GetByCode(code string) (T, bool) {
-	if s.isDisabled() {
+	if s.IsDisabled() {
 		var t T
 		return t, false
 	}
@@ -54,7 +54,7 @@ func (s *Store[T]) GetByCode(code string) (T, bool) {
 
 // Add items to store
 func (s *Store[T]) AddItems(items []T) {
-	if s.isDisabled() {
+	if s.IsDisabled() {
 		return
 	}
 	for _, item := range items {
@@ -64,7 +64,7 @@ func (s *Store[T]) AddItems(items []T) {
 
 // Add item to store
 func (s *Store[T]) Add(item T) {
-	if s.isDisabled() {
+	if s.IsDisabled() {
 		return
 	}
 	s.codeMap.Set(item.GetCode(), item)
@@ -72,7 +72,7 @@ func (s *Store[T]) Add(item T) {
 
 // Update item in store
 func (s *Store[T]) Update(item T) {
-	if s.isDisabled() {
+	if s.IsDisabled() {
 		return
 	}
 	s.codeMap.Set(item.GetCode(), item)
@@ -80,7 +80,7 @@ func (s *Store[T]) Update(item T) {
 
 // Toggle item in store by code
 func (s *Store[T]) ToggleByCode(code string, isActive bool) {
-	if s.isDisabled() {
+	if s.IsDisabled() {
 		return
 	}
 	item, ok := s.GetByCode(code)
@@ -93,7 +93,7 @@ func (s *Store[T]) ToggleByCode(code string, isActive bool) {
 
 // Delete item in store by code
 func (s *Store[T]) DeleteByCode(code string) {
-	if s.isDisabled() {
+	if s.IsDisabled() {
 		return
 	}
 	s.codeMap.Delete(code)

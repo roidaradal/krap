@@ -1,3 +1,6 @@
+v0.2.41 - Cache.IsDisabled
+    x Commit: 2025-10-28 15:15
+    x Make cache.IsDisabled public
 v0.2.40 - Disabled Cache Stores 
     x Commit: 2025-10-28 15:08
     x Add isActive field to Cache stores 
