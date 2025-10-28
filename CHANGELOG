@@ -1,3 +1,7 @@
+v0.2.40 - Disabled Cache Stores 
+    x Commit: 2025-10-28 15:08
+    x Add isActive field to Cache stores 
+    x NewDisabled*Store functions 
 v0.2.39 - Child Store Interface 
     x Commit: 2025-10-28 13:18
     x Update Child interface to GetParentID()
