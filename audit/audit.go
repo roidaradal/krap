@@ -108,13 +108,14 @@ func newBatchLogItems(batchCode string, detailsList []string) []*BatchLogItem {
 }
 
 // Inserts BatchLog using transaction
-func AddBatchLogTx(rqtx *ze.Request, action, details, actionGlue string) error {
+func AddBatchLogTx(rqtx *ze.Request, action, details, actionGlue string) (string, error) {
 	if BatchLogs == nil {
 		rqtx.Status = ze.Err500
-		return ze.ErrMissingSchema
+		return "", ze.ErrMissingSchema
 	}
 	batchLog := newBatchLog(action, details, actionGlue)
-	return BatchLogs.InsertTx(rqtx, batchLog)
+	err := BatchLogs.InsertTx(rqtx, batchLog)
+	return batchLog.Code, err
 }
 
 // Inserts BatchLogItems using transaction

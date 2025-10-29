@@ -122,5 +122,9 @@ func (s *IDStore[T]) IDCodeLookup() map[ze.ID]string {
 	if !useCache {
 		return nil
 	}
-	return s.idCode.Map()
+	lookup := s.idCode.Map()
+	if len(lookup) == 0 {
+		return nil
+	}
+	return lookup
 }

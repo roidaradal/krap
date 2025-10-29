@@ -53,6 +53,9 @@ func (s *ChildStore[T]) FromParentIDs(parentIDs ...ze.ID) []T {
 	items := fn.Filter(s.All(), func(item T) bool {
 		return slices.Contains(parentIDs, item.GetParentID())
 	})
+	if len(items) == 0 {
+		return nil
+	}
 	return items
 }
 
@@ -64,5 +67,8 @@ func (s *ChildIDStore[T]) FromParentIDs(parentIDs ...ze.ID) []T {
 	items := fn.Filter(s.All(), func(item T) bool {
 		return slices.Contains(parentIDs, item.GetParentID())
 	})
+	if len(items) == 0 {
+		return nil
+	}
 	return items
 }

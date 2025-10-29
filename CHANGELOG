@@ -1,3 +1,7 @@
+v0.2.43 - BatchLog Code 
+    x Commit: 2025-10-29 16:09
+    x Return nil in cache if len(items) == 0 
+    x Return BatchCode in audit.AddBatchLogTx
 v0.2.42 - Remove Cache IsActive
     x Commit: 2025-10-28 19:52
     x Remove isActive from Cache Stores
