@@ -1,3 +1,6 @@
+v0.2.44 - ChildStore GroupByParentIDs
+    x Commit: 2025-11-06 14:17
+    x ChildStore, ChildIDStore: GroupByParentIDs
 v0.2.43 - BatchLog Code 
     x Commit: 2025-10-29 16:09
     x Return nil in cache if len(items) == 0 

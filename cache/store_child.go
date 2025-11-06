@@ -72,3 +72,35 @@ func (s *ChildIDStore[T]) FromParentIDs(parentIDs ...ze.ID) []T {
 	}
 	return items
 }
+
+// Group items by parent IDs
+func (s *ChildStore[T]) GroupByParentIDs(parentIDs ...ze.ID) map[ze.ID][]T {
+	if !useCache || len(parentIDs) == 0 {
+		return nil
+	}
+	groups := make(map[ze.ID][]T)
+	for _, item := range s.codeMap.Values() {
+		parentID := item.GetParentID()
+		if !slices.Contains(parentIDs, parentID) {
+			continue
+		}
+		groups[parentID] = append(groups[parentID], item)
+	}
+	return groups
+}
+
+// Group items by parent IDs
+func (s *ChildIDStore[T]) GroupByParentIDs(parentIDs ...ze.ID) map[ze.ID][]T {
+	if !useCache || len(parentIDs) == 0 {
+		return nil
+	}
+	groups := make(map[ze.ID][]T)
+	for _, item := range s.codeMap.Values() {
+		parentID := item.GetParentID()
+		if !slices.Contains(parentIDs, parentID) {
+			continue
+		}
+		groups[parentID] = append(groups[parentID], item)
+	}
+	return groups
+}
