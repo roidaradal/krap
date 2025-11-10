@@ -10,6 +10,9 @@ import (
 const (
 	DEFAULT_OPTION string = "."
 	ANY_TYPE       string = "*"
+	LIST_CURRENT   string = "*"
+	LIST_ARCHIVE   string = "archive"
+	LIST_FUTURE    string = "future"
 	toggleOn       string = "on"
 	toggleOff      string = "off"
 	viewAll        string = "all"

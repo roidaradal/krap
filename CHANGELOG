@@ -1,3 +1,6 @@
+v0.2.45 - ListTypeOption 
+    x Commit: 2025-11-10 15:30
+    x ListTypeOption, WebListTypeOption
 v0.2.44 - ChildStore GroupByParentIDs
     x Commit: 2025-11-06 14:17
     x ChildStore, ChildIDStore: GroupByParentIDs

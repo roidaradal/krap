@@ -43,3 +43,16 @@ func CmdTypeOption(params []string, limit int) string {
 	}
 	return typ
 }
+
+// Return list type (current, archive, future)
+func ListTypeOption(option string) string {
+	option = strings.ToLower(option)
+	listType := LIST_CURRENT
+	switch option {
+	case LIST_ARCHIVE:
+		listType = option
+	case LIST_FUTURE:
+		listType = option
+	}
+	return listType
+}

@@ -100,3 +100,10 @@ func WebAsOption(c *gin.Context) string {
 	option := c.DefaultQuery("as", DEFAULT_OPTION)
 	return strings.ToLower(option)
 }
+
+// Gets lowercase list option from ?list=option query string,
+// Defaults to LIST_CURRENT (*)
+func WebListTypeOption(c *gin.Context) string {
+	option := c.Query("list")
+	return ListTypeOption(option)
+}
