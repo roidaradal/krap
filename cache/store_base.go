@@ -1,6 +1,9 @@
 package cache
 
 import (
+	"slices"
+
+	"github.com/roidaradal/fn"
 	"github.com/roidaradal/fn/dict"
 )
 
@@ -40,6 +43,17 @@ func (s *Store[T]) GetByCode(code string) (T, bool) {
 		return t, false
 	}
 	return s.codeMap.Get(code)
+}
+
+// Get items by codes, no guarantee on order
+func (s *Store[T]) GetByCodes(codes ...string) []T {
+	if !useCache {
+		return nil
+	}
+	allItems := s.All()
+	return fn.Filter(allItems, func(item T) bool {
+		return slices.Contains(codes, item.GetCode())
+	})
 }
 
 // Add items to store

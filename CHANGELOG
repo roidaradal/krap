@@ -1,3 +1,7 @@
+v0.2.48 - Cache Get Multiple 
+    x Commit: 2025-11-13 15:41 
+    x cache.Store.GetByCodes 
+    x cache.IDStore.GetByIDs
 v0.2.47 - Concurrent Variadic Params 
     x Commit: 2025-11-13 14:44
     x Update list parameters to variadic params in conk functions

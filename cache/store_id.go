@@ -1,6 +1,9 @@
 package cache
 
 import (
+	"slices"
+
+	"github.com/roidaradal/fn"
 	"github.com/roidaradal/fn/dict"
 	"github.com/roidaradal/rdb/ze"
 )
@@ -35,6 +38,17 @@ func (s *IDStore[T]) GetByID(id ze.ID) (T, bool) {
 		return t, false
 	}
 	return s.idMap.Get(id)
+}
+
+// Get items by IDs, no guarantee on order
+func (s *IDStore[T]) GetByIDs(ids ...ze.ID) []T {
+	if !useCache {
+		return nil
+	}
+	allItems := s.All()
+	return fn.Filter(allItems, func(item T) bool {
+		return slices.Contains(ids, item.GetID())
+	})
 }
 
 // Add items to IDStore
