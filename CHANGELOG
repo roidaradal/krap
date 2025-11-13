@@ -1,3 +1,6 @@
+v0.2.47 - Concurrent Variadic Params 
+    x Commit: 2025-11-13 14:44
+    x Update list parameters to variadic params in conk functions
 v0.2.46 - Concurrent Fetch 
     x Commit: 2025-11-13 14:14
     x conk.RequestLists, RequestListsLinear

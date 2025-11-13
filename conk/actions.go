@@ -15,7 +15,7 @@ type (
 )
 
 // Perform actions (func() error) sequentially
-func ActionsLinear(actions []ActionFn) error {
+func ActionsLinear(actions ...ActionFn) error {
 	for _, action := range actions {
 		if err := action(); err != nil {
 			return err
@@ -26,7 +26,7 @@ func ActionsLinear(actions []ActionFn) error {
 
 // Perform actions (func() error) concurrently, return first error
 // Waits for all actions to finish even if one has already returned error
-func Actions(actions []ActionFn) error {
+func Actions(actions ...ActionFn) error {
 	var eg errgroup.Group
 	for _, action := range actions {
 		eg.Go(action)
@@ -35,7 +35,7 @@ func Actions(actions []ActionFn) error {
 }
 
 // Perform contexed actions sequentially
-func ActionsCtxLinear(ctxActions []ActionCtxFn) error {
+func ActionsCtxLinear(ctxActions ...ActionCtxFn) error {
 	ctx := context.Background()
 	for _, ctxAction := range ctxActions {
 		if err := ctxAction(ctx); err != nil {
@@ -47,7 +47,7 @@ func ActionsCtxLinear(ctxActions []ActionCtxFn) error {
 
 // Perform contexed actions concurrently, return first error
 // Actions have to check if context has cancelled to end early
-func ActionsCtx(ctxActions []ActionCtxFn, timeoutSeconds float64) error {
+func ActionsCtx(timeoutSeconds float64, ctxActions ...ActionCtxFn) error {
 	ctx := context.Background()
 	if timeoutSeconds > 0 {
 		var cancel context.CancelFunc
@@ -66,7 +66,7 @@ func ActionsCtx(ctxActions []ActionCtxFn, timeoutSeconds float64) error {
 }
 
 // Perform requests (func(*Request) error) sequentially
-func RequestsLinear(rq *ze.Request, requests []RequestFn) error {
+func RequestsLinear(rq *ze.Request, requests ...RequestFn) error {
 	for _, request := range requests {
 		if err := request(rq); err != nil {
 			return err
@@ -77,7 +77,7 @@ func RequestsLinear(rq *ze.Request, requests []RequestFn) error {
 
 // Perform requests (func(*Request) error) concurrently, return first error
 // Waits for all requests to finish even if one has already returned error
-func Requests(rq *ze.Request, requests []RequestFn) error {
+func Requests(rq *ze.Request, requests ...RequestFn) error {
 	var eg errgroup.Group
 	for _, request := range requests {
 		eg.Go(func() error {

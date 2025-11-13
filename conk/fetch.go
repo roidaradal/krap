@@ -8,7 +8,7 @@ import (
 type RequestListFn[T any] = func(*ze.Request) ([]T, error)
 
 // Perform request list sequentially
-func RequestListsLinear[T any](rq *ze.Request, fetchers []RequestListFn[T]) ([]T, error) {
+func RequestListsLinear[T any](rq *ze.Request, fetchers ...RequestListFn[T]) ([]T, error) {
 	allResults := make([]T, 0)
 	for _, fetcher := range fetchers {
 		results, err := fetcher(rq)
@@ -21,7 +21,7 @@ func RequestListsLinear[T any](rq *ze.Request, fetchers []RequestListFn[T]) ([]T
 }
 
 // Perform request list concurrently
-func RequestLists[T any](rq *ze.Request, fetchers []RequestListFn[T]) ([]T, error) {
+func RequestLists[T any](rq *ze.Request, fetchers ...RequestListFn[T]) ([]T, error) {
 	var eg errgroup.Group
 	resultCh := make(chan T, len(fetchers))
 
