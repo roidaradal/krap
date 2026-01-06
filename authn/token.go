@@ -2,7 +2,7 @@ package authn
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/roidaradal/fn/check"
+	"github.com/roidaradal/fn/list"
 	"github.com/roidaradal/fn/str"
 	"github.com/roidaradal/krap"
 	"github.com/roidaradal/rdb/ze"
@@ -16,7 +16,7 @@ const (
 // Creates authn.Token from string "Type/Code"
 func NewToken(authToken string) *Token {
 	parts := str.CleanSplit(authToken, authTokenGlue)
-	if len(parts) != 2 || check.Any(parts, check.IsEmptyString) {
+	if len(parts) != 2 || list.Any(parts, str.IsEmpty) {
 		return nil
 	}
 	return &Token{
@@ -28,7 +28,7 @@ func NewToken(authToken string) *Token {
 // Checks if authToken string can be a valid authn.Token
 func IsToken(authToken string) bool {
 	parts := str.CleanSplit(authToken, authTokenGlue)
-	return len(parts) == 2 && check.All(parts, check.NotEmptyString)
+	return len(parts) == 2 && list.All(parts, str.NotEmpty)
 }
 
 // Get the authn.Token from the Authorization header

@@ -153,7 +153,7 @@ func GetScopedAccess(table string, scopeCode string) dict.StringListMap {
 // Check if role is allowed to do action on item
 func CheckActionAllowedFor(rq *ze.Request, role string) error {
 	role = strings.ToUpper(role)
-	fullAction := createFullAction(strings.ToUpper(rq.Action), strings.ToUpper(rq.Item))
+	fullAction := createFullAction(strings.ToUpper(rq.Action), strings.ToUpper(rq.Target))
 	allowedRoles := appAccess[fullAction]
 	if !slices.Contains(allowedRoles, role) {
 		rq.Status = ze.Err403
@@ -174,7 +174,7 @@ func CheckScopedActionAllowedFor(rq *ze.Request, table, scopeCode, role string) 
 		return ErrUnauthorizedAccess
 	}
 	role = strings.ToUpper(role)
-	fullAction := createFullAction(strings.ToUpper(rq.Action), strings.ToUpper(rq.Item))
+	fullAction := createFullAction(strings.ToUpper(rq.Action), strings.ToUpper(rq.Target))
 	allowedRoles := scopedAccess[table][scopeCode][fullAction]
 	if !slices.Contains(allowedRoles, role) {
 		rq.Status = ze.Err403

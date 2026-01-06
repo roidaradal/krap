@@ -55,7 +55,7 @@ func NewFullTask[A Actor, T any](action, item string, fn TaskFn[A, T], deferActi
 		BaseTask: &BaseTask[A]{},
 	}
 	task.Action = action
-	task.Item = item
+	task.Target = item
 	task.Fn = fn
 	task.DeferActionCheck = deferActionCheck
 	return task
@@ -67,7 +67,7 @@ func NewCodedFullTask[A Actor, T any](action, item string, fn TaskFn[A, T], code
 		BaseTask: &BaseTask[A]{},
 	}
 	task.Action = action
-	task.Item = item
+	task.Target = item
 	task.Fn = fn
 	task.CodeIndex = codeIndex
 	return task

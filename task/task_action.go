@@ -61,7 +61,7 @@ func NewActionTask[A Actor](action, item string, fn ActionFn[A]) *ActionTask[A] 
 		BaseTask: &BaseTask[A]{},
 	}
 	task.Action = action
-	task.Item = item
+	task.Target = item
 	task.Fn = fn
 	return task
 }

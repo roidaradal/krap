@@ -35,7 +35,7 @@ func NewListTask[T any](item string, fn ListFn[T]) *ListTask[T] {
 	task := &ListTask[T]{
 		BaseDataTokenTask: &BaseDataTokenTask{},
 	}
-	task.Item = item
+	task.Target = item
 	task.Fn = fn
 	return task
 }
@@ -45,7 +45,7 @@ func NewCodedListTask[A Actor, T any](item string, fn ListFn[T], codeIndex int) 
 	task := &CodedListTask[A, T]{
 		BaseDataTask: &BaseDataTask[A]{},
 	}
-	task.Item = item
+	task.Target = item
 	task.Fn = fn
 	task.CodeIndex = codeIndex
 	return task

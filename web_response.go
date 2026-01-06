@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/roidaradal/fn"
+	"github.com/roidaradal/fn/lang"
 	"github.com/roidaradal/rdb/ze"
 )
 
@@ -126,7 +126,7 @@ func getOutput(rq *ze.Request, err error) string {
 func getStatusMessage(rq *ze.Request, err error) (int, string) {
 	message, ok := publicErrorMessage(err)
 	// default status: 400 if has public error message, else 500
-	status := fn.Ternary(ok, ze.Err400, ze.Err500)
+	status := lang.Ternary(ok, ze.Err400, ze.Err500)
 	// Check request status
 	if rq != nil {
 		status = rq.Status // get request status by default

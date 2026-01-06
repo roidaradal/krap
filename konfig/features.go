@@ -4,7 +4,6 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/roidaradal/fn"
 	"github.com/roidaradal/fn/dict"
 	"github.com/roidaradal/rdb"
 	"github.com/roidaradal/rdb/ze"
@@ -69,7 +68,7 @@ func GetActiveFeatures() []string {
 	if appFeatures == nil {
 		return []string{}
 	}
-	activeFeatures := fn.FilterMap(appFeatures, func(feature string, isActive bool) bool {
+	activeFeatures := dict.Filter(appFeatures, func(feature string, isActive bool) bool {
 		return isActive
 	})
 	return dict.Keys(activeFeatures)

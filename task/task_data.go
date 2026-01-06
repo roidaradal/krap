@@ -34,7 +34,7 @@ func NewDataTask[T any](item string, fn DataFn[T]) *DataTask[T] {
 	task := &DataTask[T]{
 		BaseDataTokenTask: &BaseDataTokenTask{},
 	}
-	task.Item = item
+	task.Target = item
 	task.Fn = fn
 	return task
 }
@@ -44,7 +44,7 @@ func NewCodedDataTask[A Actor, T any](item string, fn DataFn[T], codeIndex int) 
 	task := &CodedDataTask[A, T]{
 		BaseDataTask: &BaseDataTask[A]{},
 	}
-	task.Item = item
+	task.Target = item
 	task.Fn = fn
 	task.CodeIndex = codeIndex
 	return task

@@ -1,9 +1,9 @@
 package authn
 
 import (
-	"github.com/roidaradal/fn"
 	"github.com/roidaradal/fn/clock"
 	"github.com/roidaradal/fn/dict"
+	"github.com/roidaradal/fn/lang"
 	"github.com/roidaradal/rdb"
 	"github.com/roidaradal/rdb/ze"
 )
@@ -55,7 +55,7 @@ func storeAddSession(session *Session) {
 // Get session from session store using authToken string as key
 func storeGetSession(authToken string) *Session {
 	session, ok := sessionStore.Get(authToken)
-	return fn.Ternary(ok, session, nil)
+	return lang.Ternary(ok, session, nil)
 }
 
 // Deletes session from session store

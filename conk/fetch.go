@@ -30,9 +30,9 @@ func RequestLists[T any](rq *ze.Request, fetchers ...RequestListFn[T]) ([]T, err
 			srq := rq.SubRequest()
 			defer rq.MergeLogs(srq)
 
-			items, err := fetcher(srq)
-			if err != nil {
-				return err
+			items, subErr := fetcher(srq)
+			if subErr != nil {
+				return subErr
 			}
 			for _, item := range items {
 				resultCh <- item

@@ -55,7 +55,7 @@ func archiveExpiredSessions() (*ze.Request, error) {
 		return rq, err
 	}
 
-	start := clock.TimeNow()
+	start := clock.Now()
 	defer func() {
 		rq.AddDurationLog(start)
 	}()
@@ -114,7 +114,7 @@ func deleteArchivedSessions(marginDays uint) (*ze.Request, error) {
 		return rq, err
 	}
 
-	now := clock.TimeNow()
+	now := clock.Now()
 	defer func() {
 		rq.AddDurationLog(now)
 	}()

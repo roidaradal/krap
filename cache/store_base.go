@@ -3,8 +3,8 @@ package cache
 import (
 	"slices"
 
-	"github.com/roidaradal/fn"
 	"github.com/roidaradal/fn/dict"
+	"github.com/roidaradal/fn/list"
 )
 
 type codeable interface {
@@ -51,7 +51,7 @@ func (s *Store[T]) GetByCodes(codes ...string) []T {
 		return nil
 	}
 	allItems := s.All()
-	return fn.Filter(allItems, func(item T) bool {
+	return list.Filter(allItems, func(item T) bool {
 		return slices.Contains(codes, item.GetCode())
 	})
 }

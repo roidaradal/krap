@@ -36,7 +36,7 @@ func NewViewTask[T any](item string, fn DataFn[T]) *ViewTask[T] {
 		BaseTokenTask: &BaseTokenTask{},
 	}
 	task.Action = authz.VIEW
-	task.Item = item
+	task.Target = item
 	task.Fn = fn
 	return task
 }
@@ -47,7 +47,7 @@ func NewCodedViewTask[A Actor, T any](item string, fn DataFn[T], codeIndex int) 
 		BaseTask: &BaseTask[A]{},
 	}
 	task.Action = authz.VIEW
-	task.Item = item
+	task.Target = item
 	task.Fn = fn
 	task.CodeIndex = codeIndex
 	return task

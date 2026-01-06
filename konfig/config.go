@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/roidaradal/fn"
-	"github.com/roidaradal/fn/conv"
 	"github.com/roidaradal/fn/dict"
 	"github.com/roidaradal/fn/dyn"
+	"github.com/roidaradal/fn/lang"
+	"github.com/roidaradal/fn/number"
 	"github.com/roidaradal/fn/str"
 	"github.com/roidaradal/krap"
 	"github.com/roidaradal/rdb"
@@ -87,7 +87,7 @@ func getKey(fullKey string) string {
 func uintOrDefault(lookup dict.StringMap, defaultValue map[string]uint, key string) uint {
 	value := defaultValue[key]
 	if lookupValue, ok := lookup[key]; ok {
-		value = uint(conv.ParseInt(lookupValue))
+		value = uint(number.ParseInt(lookupValue))
 	}
 	return value
 }
@@ -96,7 +96,7 @@ func uintOrDefault(lookup dict.StringMap, defaultValue map[string]uint, key stri
 func intOrDefault(lookup dict.StringMap, defaultValue map[string]int, key string) int {
 	value := defaultValue[key]
 	if lookupValue, ok := lookup[key]; ok {
-		value = conv.ParseInt(lookupValue)
+		value = number.ParseInt(lookupValue)
 	}
 	return value
 }
@@ -104,11 +104,11 @@ func intOrDefault(lookup dict.StringMap, defaultValue map[string]int, key string
 // Tries to get lookup[key], fallsback to defaultValue[key]
 func stringOrDefault(lookup dict.StringMap, defaultValue dict.StringMap, key string) string {
 	value, ok := lookup[key]
-	return fn.Ternary(ok, value, defaultValue[key])
+	return lang.Ternary(ok, value, defaultValue[key])
 }
 
 // Tries to convert lookup[key] to []string, fallsback to defaultValue[key]
 func stringListOrDefault(lookup dict.StringMap, defaultValue dict.StringListMap, key string) []string {
 	value, ok := lookup[key]
-	return fn.Ternary(ok, str.CleanSplit(value, listGlue), defaultValue[key])
+	return lang.Ternary(ok, str.CleanSplit(value, listGlue), defaultValue[key])
 }

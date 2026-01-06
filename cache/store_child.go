@@ -3,7 +3,7 @@ package cache
 import (
 	"slices"
 
-	"github.com/roidaradal/fn"
+	"github.com/roidaradal/fn/list"
 	"github.com/roidaradal/rdb/ze"
 )
 
@@ -50,7 +50,7 @@ func (s *ChildStore[T]) FromParentIDs(parentIDs ...ze.ID) []T {
 	if !useCache || len(parentIDs) == 0 {
 		return nil
 	}
-	items := fn.Filter(s.All(), func(item T) bool {
+	items := list.Filter(s.All(), func(item T) bool {
 		return slices.Contains(parentIDs, item.GetParentID())
 	})
 	if len(items) == 0 {
@@ -64,7 +64,7 @@ func (s *ChildIDStore[T]) FromParentIDs(parentIDs ...ze.ID) []T {
 	if !useCache || len(parentIDs) == 0 {
 		return nil
 	}
-	items := fn.Filter(s.All(), func(item T) bool {
+	items := list.Filter(s.All(), func(item T) bool {
 		return slices.Contains(parentIDs, item.GetParentID())
 	})
 	if len(items) == 0 {

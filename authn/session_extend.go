@@ -15,7 +15,7 @@ func extendSessions() (*ze.Request, error) {
 		return rq, err
 	}
 
-	start := clock.TimeNow()
+	start := clock.Now()
 	defer func() {
 		rq.AddDurationLog(start)
 	}()

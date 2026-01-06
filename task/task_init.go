@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/roidaradal/fn"
+	"github.com/roidaradal/fn/lang"
 	"github.com/roidaradal/krap/authn"
 	"github.com/roidaradal/krap/authz"
 	"github.com/roidaradal/rdb/ze"
@@ -72,7 +72,7 @@ func (task BaseTask[A]) webInitialize(c *gin.Context) (*ze.Request, *A, error) {
 // Common BaseTask initialize
 func initialize[A Actor, P any](task *BaseTask[A], p P, decorator Decorator[A, P]) (*ze.Request, *A, error) {
 	// Create request
-	name := task.FullAction()
+	name := task.FullName()
 	rq, err := ze.NewRequest(name)
 	if err != nil {
 		return rq, nil, err
@@ -103,7 +103,7 @@ func (task BaseTokenTask) webInitialize(c *gin.Context) (*ze.Request, *authn.Tok
 // Common BaseTokenTask initialize
 func initializeToken[P any](task *BaseTokenTask, p P, decorator TokenDecorator[P]) (*ze.Request, *authn.Token, error) {
 	// Create request
-	name := task.FullAction()
+	name := task.FullName()
 	rq, err := ze.NewRequest(name)
 	if err != nil {
 		return rq, nil, err
@@ -134,7 +134,7 @@ func (task BaseDataTask[A]) webInitialize(c *gin.Context) (*ze.Request, *A, erro
 // Common BaseDataTask initialize
 func initializeData[A Actor, P any](task *BaseDataTask[A], p P, decorator DataDecorator[A, P]) (*ze.Request, *A, error) {
 	// Create request
-	rq, err := ze.NewRequest(task.Item) // temporary name, updated below
+	rq, err := ze.NewRequest(task.Target) // temporary name, updated below
 	if err != nil {
 		return rq, nil, err
 	}
@@ -147,9 +147,9 @@ func initializeData[A Actor, P any](task *BaseDataTask[A], p P, decorator DataDe
 		return rq, nil, err
 	}
 	// Attach action, item to request
-	rq.Action = fn.Ternary(mustBeActive, authz.VIEW, authz.ROWS)
-	rq.Item = task.Item
-	rq.Name = rq.Task.FullAction()
+	rq.Action = lang.Ternary(mustBeActive, authz.VIEW, authz.ROWS)
+	rq.Target = task.Target
+	rq.Name = rq.Task.FullName()
 	return rq, actor, nil
 }
 
@@ -166,7 +166,7 @@ func (task BaseDataTokenTask) webInitialize(c *gin.Context) (*ze.Request, *authn
 // Common BaseDataTokenTask initialize
 func initializeDataToken[P any](task *BaseDataTokenTask, p P, decorator DataTokenDecorator[P]) (*ze.Request, *authn.Token, error) {
 	// Create request
-	rq, err := ze.NewRequest(task.Item) // temporary name, updated below
+	rq, err := ze.NewRequest(task.Target) // temporary name, updated below
 	if err != nil {
 		return rq, nil, err
 	}
@@ -179,9 +179,9 @@ func initializeDataToken[P any](task *BaseDataTokenTask, p P, decorator DataToke
 		return rq, nil, err
 	}
 	// Attach action, item to request
-	rq.Action = fn.Ternary(mustBeActive, authz.VIEW, authz.ROWS)
-	rq.Item = task.Item
-	rq.Name = rq.Task.FullAction()
+	rq.Action = lang.Ternary(mustBeActive, authz.VIEW, authz.ROWS)
+	rq.Target = task.Target
+	rq.Name = rq.Task.FullName()
 	return rq, authnToken, nil
 }
 

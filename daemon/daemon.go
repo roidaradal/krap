@@ -58,11 +58,11 @@ func Run(name string, task func(), interval int, timeScale time.Duration) {
 		return
 	}
 	timeInterval := time.Duration(interval) * timeScale
-	daemonStart.Set(name, clock.TimeNow())
+	daemonStart.Set(name, clock.Now())
 	daemonDuration.Set(name, timeInterval)
 	go func() {
 		for {
-			start := clock.TimeNow()
+			start := clock.Now()
 			daemonLast.Set(name, start)
 			task()
 			clock.Sleep(timeInterval, start)

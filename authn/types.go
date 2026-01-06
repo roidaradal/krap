@@ -56,5 +56,5 @@ func (a Token) String() string {
 }
 
 func (s Session) IsExpired() bool {
-	return clock.CheckIfExpired(s.ExpiresAt)
+	return clock.IsExpired(s.ExpiresAt)
 }
