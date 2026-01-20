@@ -1,3 +1,10 @@
+TODO: 
+- Add CLI app pattern of <command> (key=value)* for options
+###################################################################
+v0.3.1 - Reset 
+    x Commit: 2026-01-20 09:02
+    x Remove old files 
+    x Update required Go version to 1.25.0
 v0.3.0 - Refactor 
     x Commit: 2026-01-06 11:49
     x Add MIT License
