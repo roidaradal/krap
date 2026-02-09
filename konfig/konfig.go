@@ -2,8 +2,7 @@
 package konfig
 
 import (
-	"fmt"
-
+	"github.com/roidaradal/fn/fail"
 	"github.com/roidaradal/rdb/ze"
 )
 
@@ -14,8 +13,7 @@ func Initialize() error {
 	KVSchema, errs = ze.AddSchema(&KV{}, "config_app", errs)
 
 	if len(errs) > 0 {
-		return fmt.Errorf("%d errors encountered: %w", len(errs), errs[0])
-
+		return fail.FromErrors("konfig.Initialize", errs)
 	}
 
 	return nil

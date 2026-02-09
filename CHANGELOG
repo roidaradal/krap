@@ -1,7 +1,9 @@
 TODO:
-- Add fail package, which contains common application error messages
 - Add html2pdf utility function
 ######################################################
+v0.3.3 - app.Initializer 
+    x Commit: 2026-02-09 14:58
+    x app.Initializer
 v0.3.2 - konfig.KV 
     x Commit: 2026-02-09 14:16
     x konfig.KV, KVSchema 
