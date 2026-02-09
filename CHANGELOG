@@ -1,6 +1,11 @@
-TODO: 
-- Add CLI app pattern of <command> (key=value)* for options
-###################################################################
+TODO:
+- Add fail package, which contains common application error messages
+- Add html2pdf utility function
+######################################################
+v0.3.2 - konfig.KV 
+    x Commit: 2026-02-09 14:16
+    x konfig.KV, KVSchema 
+    x konfig.Initialize
 v0.3.1 - Reset 
     x Commit: 2026-01-20 09:02
     x Remove old files 
