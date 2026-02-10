@@ -1,6 +1,9 @@
 TODO:
 - Add html2pdf utility function
 ######################################################
+v0.3.7 - app.RunInitializers 
+    x Commit: 2026-02-10 10:41 
+    x app.RunInitializers
 v0.3.6 - konfig.Lookup 
     x Commit: 2026-02-10 10:26
     x konfig.Lookup, Create

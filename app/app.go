@@ -42,3 +42,14 @@ func IsValidEnv(env Env) error {
 func IsProdEnv(env Env) bool {
 	return env == EnvProd
 }
+
+// Run initializers list
+func RunInitializers(initializers []Initializer) error {
+	for _, initializer := range initializers {
+		err := initializer.Fn()
+		if err != nil {
+			return fmt.Errorf("%s: failed to initialize: %w", initializer.Name, err)
+		}
+	}
+	return nil
+}
