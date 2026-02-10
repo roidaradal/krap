@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"os"
 )
@@ -25,6 +26,14 @@ func CheckRequiredEnvKeys(keys []string) error {
 		if value == "" || !ok {
 			return fmt.Errorf("missing env variable: %s", key)
 		}
+	}
+	return nil
+}
+
+// Check if valid env
+func IsValidEnv(env Env) error {
+	if env != EnvDev && env != EnvProd {
+		return errors.New("invalid app env")
 	}
 	return nil
 }
