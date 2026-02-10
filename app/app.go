@@ -30,10 +30,15 @@ func CheckRequiredEnvKeys(keys []string) error {
 	return nil
 }
 
-// Check if valid env
+// Check if valid env ('dev' or 'prod')
 func IsValidEnv(env Env) error {
 	if env != EnvDev && env != EnvProd {
 		return errors.New("invalid app env")
 	}
 	return nil
+}
+
+// Check if app env is 'prod'
+func IsProdEnv(env Env) bool {
+	return env == EnvProd
 }
