@@ -1,6 +1,10 @@
 TODO:
 - Add html2pdf utility function
 ######################################################
+v0.3.4 - app.CheckRequiredEnvKeys
+    x Commit: 2026-02-10 09:31
+    x app.EnvDev, EnvProd
+    x app.CheckRequiredEnvKeys
 v0.3.3 - app.Initializer 
     x Commit: 2026-02-09 14:58
     x app.Initializer

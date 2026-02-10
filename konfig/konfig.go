@@ -10,7 +10,7 @@ import (
 func Initialize() error {
 	errs := make([]error, 0)
 
-	KVSchema, errs = ze.AddSchema(&KV{}, "config_app", errs)
+	KVSchema = ze.AddSchema(&KV{}, "config_app", errs)
 
 	if len(errs) > 0 {
 		return fail.FromErrors("konfig.Initialize", errs)
