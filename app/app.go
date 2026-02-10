@@ -9,8 +9,9 @@ import (
 type Env = string
 
 const (
-	EnvDev  Env = "dev"
-	EnvProd Env = "prod"
+	EnvDev    Env    = "dev"
+	EnvProd   Env    = "prod"
+	okMessage string = "OK"
 )
 
 // Initializer function with name

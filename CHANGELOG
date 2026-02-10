@@ -1,6 +1,9 @@
 TODO:
 - Add html2pdf utility function
 ######################################################
+v0.3.9 - Display Output 
+    x Commit: 2026-02-10 11:55 
+    x app.DisplayOutput, DisplayError
 v0.3.8 - Daemon Package 
     x Commit: 2026-02-10 11:40
     x daemon.LoadConfig 
