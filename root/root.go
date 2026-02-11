@@ -12,6 +12,7 @@ import (
 
 	"github.com/roidaradal/fn/dict"
 	"github.com/roidaradal/fn/ds"
+	"github.com/roidaradal/fn/fail"
 	"github.com/roidaradal/fn/lang"
 	"github.com/roidaradal/fn/str"
 	"golang.org/x/term"
@@ -104,6 +105,34 @@ func MainLoop(onExit func()) {
 			c.Handler(params)
 		}
 	}
+}
+
+// Get key=value map from parameters list
+func ParamsMap(params []string, required []string, optional []string) (dict.StringMap, error) {
+	if required == nil {
+		required = make([]string, 0)
+	}
+	if optional == nil {
+		optional = make([]string, 0)
+	}
+	paramsMap := make(dict.StringMap)
+	for _, param := range params {
+		parts := str.CleanSplitN(param, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		key, value := parts[0], parts[1]
+		if !slices.Contains(required, key) && !slices.Contains(optional, key) {
+			continue
+		}
+		paramsMap[key] = value
+	}
+	for _, key := range required {
+		if _, ok := paramsMap[key]; !ok {
+			return nil, fail.MissingParams
+		}
+	}
+	return paramsMap, nil
 }
 
 // Authenticate Root account in command-line app

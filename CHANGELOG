@@ -1,6 +1,9 @@
 TODO:
 - Add html2pdf utility function
 ######################################################
+v0.3.12 - root.ParamsMap    
+    x Commit: 2026-02-12 07:34
+    x root.ParamsMap
 v0.3.11 - App Display Functions 
     x Commit: 2026-02-11 11:20
     x app.DisplayData 
