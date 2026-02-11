@@ -3,8 +3,9 @@ module github.com/roidaradal/krap
 go 1.25.0
 
 require (
-	github.com/roidaradal/fn v0.5.65
-	github.com/roidaradal/rdb v0.14.6
+	github.com/roidaradal/fn v0.5.66
+	github.com/roidaradal/rdb v0.14.10
+	golang.org/x/term v0.40.0 
 )
 
 require (
@@ -15,7 +16,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.1 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	golang.org/x/crypto v0.47.0 // indirect
+	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
-	golang.org/x/text v0.33.0 // indirect
+	golang.org/x/text v0.34.0 // indirect
 )
