@@ -1,6 +1,10 @@
 TODO:
 - Add html2pdf utility function
 ######################################################
+v0.3.11 - App Display Functions 
+    x Commit: 2026-02-11 11:20
+    x app.DisplayData 
+    x app.DisplayList
 v0.3.10 - Root Package 
     x Commit: 2026-02-11 10:41
     x types: root.CmdHandler, CmdConfig 
