@@ -3,10 +3,10 @@ module github.com/roidaradal/krap
 go 1.25.0
 
 require (
+	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-gonic/gin v1.11.0
-	github.com/gin-contrib/cors v1.7.6 
-	github.com/roidaradal/fn v0.5.67
-	github.com/roidaradal/rdb v0.14.10
+	github.com/roidaradal/fn v0.5.68
+	github.com/roidaradal/rdb v0.14.12
 	golang.org/x/term v0.40.0
 )
 

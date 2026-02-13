@@ -8,7 +8,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/roidaradal/fn/io"
-	"github.com/roidaradal/krap/app"
+	"github.com/roidaradal/krap/sys"
 )
 
 type Config struct {
@@ -41,8 +41,8 @@ func LoadConfig(path string) (*Config, error) {
 }
 
 // Creates a new Gin web server
-func NewServer(cfg *Config, appEnv app.Env) (*gin.Engine, string) {
-	isProdEnv := app.IsProdEnv(appEnv)
+func NewServer(cfg *Config, appEnv sys.Env) (*gin.Engine, string) {
+	isProdEnv := sys.IsProdEnv(appEnv)
 	if isProdEnv {
 		gin.SetMode(gin.ReleaseMode)
 	}

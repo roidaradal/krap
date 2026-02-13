@@ -59,8 +59,12 @@ github.com/quic-go/quic-go v0.59.0 h1:OLJkp1Mlm/aS7dpKgTc6cnpynnD2Xg7C1pwL6vy/SA
 github.com/quic-go/quic-go v0.59.0/go.mod h1:upnsH4Ju1YkqpLXC305eW3yDZ4NfnNbmQRCMWS58IKU=
 github.com/roidaradal/fn v0.5.67 h1:L2jOCh2oC+gtToNiRSet2E1QlAJs1MTgGQ6Zkk8IBpQ=
 github.com/roidaradal/fn v0.5.67/go.mod h1:6C/4KgPWH0ifkguY+z0Pz9mzf64wk308H+jAkQhlLfg=
+github.com/roidaradal/fn v0.5.68 h1:2tXDg6MTbgM3R6lzpkvCfMDKDCBQkwqQLd8YuYKIiYY=
+github.com/roidaradal/fn v0.5.68/go.mod h1:6C/4KgPWH0ifkguY+z0Pz9mzf64wk308H+jAkQhlLfg=
 github.com/roidaradal/rdb v0.14.10 h1:7pDbAb6Kilemcv7OxlpR2CHtsJYvsO5czXGVMAH9WVs=
 github.com/roidaradal/rdb v0.14.10/go.mod h1:0reKyLmYnqPP0X1XrGJ2dFINs3RERJYKoy9JJfzg+3U=
+github.com/roidaradal/rdb v0.14.12 h1:XiQyZAeL20fYzvopov2a0JrwLb8cn8vZ4EhYyXYMFZ0=
+github.com/roidaradal/rdb v0.14.12/go.mod h1:7z0ig+XOnZvmSA2ck2EtkaRCVTAiCBSkwq4uSOA6gFI=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.4.0/go.mod h1:YvHI0jy2hoMjB+UWwv71VJQ9isScKT/TqJzVSSt89Yw=
 github.com/stretchr/objx v0.5.0/go.mod h1:Yh+to48EsGEfYuaHDzXPcE3xhTkx73EhmCGUpEOglKo=
