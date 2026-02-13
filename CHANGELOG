@@ -1,6 +1,9 @@
 TODO:
 - Add html2pdf utility function
 ######################################################
+v0.3.15 - Add middleware to RegisterRoutes 
+    x Commit: 2026-02-13 09:01
+    x Add middleware functions to web.RegisterRoutes
 v0.3.14 - Update web.RegisterRoutes
     x Commit: 2026-02-13 08:18
     x Return the router in web.RegisterRoutes
