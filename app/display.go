@@ -8,7 +8,7 @@ import (
 	"github.com/roidaradal/rdb/ze"
 )
 
-// Prints request logs and error
+// Prints request logs and error; prints OK if no error
 func DisplayOutput(rq *ze.Request, err error) {
 	if rq != nil {
 		fmt.Println(rq.Output())
@@ -16,6 +16,16 @@ func DisplayOutput(rq *ze.Request, err error) {
 	if err == nil {
 		fmt.Println(okMessage)
 	} else {
+		DisplayError(err)
+	}
+}
+
+// Prints request logs and error
+func DisplayResult(rq *ze.Request, err error) {
+	if rq != nil {
+		fmt.Println(rq.Output())
+	}
+	if err != nil {
 		DisplayError(err)
 	}
 }
