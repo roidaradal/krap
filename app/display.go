@@ -11,7 +11,7 @@ import (
 // Prints request logs and error; prints OK if no error
 func DisplayOutput(rq *ze.Request, err error) {
 	if rq != nil {
-		fmt.Println(rq.Output())
+		displayOutput(rq)
 	}
 	if err == nil {
 		fmt.Println(okMessage)
@@ -23,7 +23,7 @@ func DisplayOutput(rq *ze.Request, err error) {
 // Prints request logs and error
 func DisplayResult(rq *ze.Request, err error) {
 	if rq != nil {
-		fmt.Println(rq.Output())
+		displayOutput(rq)
 	}
 	if err != nil {
 		DisplayError(err)
@@ -40,7 +40,7 @@ func DisplayError(err error) {
 // Prints data, request logs, and error
 func DisplayData[T any](data *T, rq *ze.Request, err error) {
 	if rq != nil {
-		fmt.Println(rq.Output())
+		displayOutput(rq)
 	}
 	if err == nil {
 		if data == nil {
@@ -61,7 +61,7 @@ func DisplayData[T any](data *T, rq *ze.Request, err error) {
 // Prints list items, request logs, and error
 func DisplayList[T any](list *ds.List[*T], rq *ze.Request, err error) {
 	if rq != nil {
-		fmt.Println(rq.Output())
+		displayOutput(rq)
 	}
 	if err == nil {
 		for i, item := range list.Items {
@@ -74,5 +74,12 @@ func DisplayList[T any](list *ds.List[*T], rq *ze.Request, err error) {
 		fmt.Println("Count:", list.Count)
 	} else {
 		DisplayError(err)
+	}
+}
+
+func displayOutput(rq *ze.Request) {
+	output := rq.Output()
+	if output != "" {
+		fmt.Println(output)
 	}
 }

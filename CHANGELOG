@@ -1,6 +1,9 @@
 TODO:
 - Add html2pdf utility function
 ######################################################
+v0.3.17 - Skip Blank Prints
+    x Commit: 2026-02-13 11:25
+    x Only print in app.Display if non-empty text
 v0.3.16 - app.DisplayResult
     x Commit: 2026-02-13 09:47 
     x app.DisplayResult
