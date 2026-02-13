@@ -10,7 +10,7 @@ type Handler struct {
 }
 
 // Register web handlers, returns the number of endpoints
-func RegisterRoutes(server *gin.Engine, baseURL string, handlers []Handler) int {
+func RegisterRoutes(server *gin.Engine, baseURL string, handlers []Handler) (*gin.RouterGroup, int) {
 	count := 0
 	router := server.Group(baseURL)
 	for _, handler := range handlers {
@@ -19,5 +19,5 @@ func RegisterRoutes(server *gin.Engine, baseURL string, handlers []Handler) int 
 			count += 1
 		}
 	}
-	return count
+	return router, count
 }
